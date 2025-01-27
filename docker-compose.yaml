@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16
+    volumes:
+      - /var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=reminders
+    ports:
+      - "5432:5432"
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=later
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=1234
