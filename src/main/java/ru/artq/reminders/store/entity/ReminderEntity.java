@@ -1,10 +1,9 @@
-package ru.artq.reminders.store.entities;
+package ru.artq.reminders.store.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "reminders")
@@ -27,9 +26,7 @@ public class ReminderEntity {
     @Builder.Default
     private PriorityReminder priority = PriorityReminder.NONE;
 
-    private LocalDate date = LocalDate.now();
-
-    private LocalTime time = LocalTime.now();
+    private Instant time = Instant.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reminder_list_id", nullable = false)
