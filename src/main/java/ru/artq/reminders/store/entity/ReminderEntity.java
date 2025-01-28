@@ -18,17 +18,17 @@ public class ReminderEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String title;
+    private String name;
 
-    private String notes;
+    private String description;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private PriorityReminder priority = PriorityReminder.NONE;
+    private ReminderPriority priority = ReminderPriority.NONE;
 
-    private Instant time = Instant.now();
+    private Instant createdAt = Instant.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reminder_list_id", nullable = false)
-    private ListRemindersEntity list;
+    private ReminderListEntity list;
 }

@@ -12,11 +12,11 @@ public class ReminderDto {
     private Long id;
 
     @NonNull
-    private String title;
+    private String name;
 
-    private String notes;
+    private String description;
 
     private String priority;
 
-    private Instant time;
+    private Instant createdAt;
 }
