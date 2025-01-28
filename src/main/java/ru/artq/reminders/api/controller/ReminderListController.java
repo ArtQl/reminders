@@ -26,7 +26,7 @@ public class ReminderListController {
 
     @PostMapping(CREATE_REMINDER_LIST)
     public ReminderListDto createList(@RequestParam String title) {
-        ControllerValidate.checkListTitle(title);
+        ControllerValidate.checkListName(title);
         return reminderListService.createList(title);
     }
 
@@ -34,7 +34,7 @@ public class ReminderListController {
     public ReminderListDto updateList(@PathVariable("list-id") Long listId,
                                       @RequestParam String title) {
         ControllerValidate.checkListId(listId);
-        ControllerValidate.checkListTitle(title);
+        ControllerValidate.checkListName(title);
         return reminderListService.updateList(listId, title);
     }
 
