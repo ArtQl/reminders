@@ -8,7 +8,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ListRemindersDto {
+public class ReminderListDto {
     private Long id;
 
     @NonNull

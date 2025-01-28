@@ -6,7 +6,7 @@ import ru.artq.reminders.api.dto.ReminderDto;
 import ru.artq.reminders.api.service.ReminderService;
 
 @RestController
-@RequestMapping("api/list-reminders")
+@RequestMapping("api/reminder-list")
 @RequiredArgsConstructor
 public class ReminderController {
     private final static String FIND_REMINDER = "{list-id}/{reminder-id}";
@@ -26,8 +26,8 @@ public class ReminderController {
     @PostMapping(CREATE_REMINDER)
     public ReminderDto createReminder(
             @PathVariable("list-id") Long listId,
-            @RequestParam String title,
-            @RequestParam(required = false) String note,
+            @RequestParam String name,
+            @RequestParam(required = false) String description,
             @RequestParam(required = false) String priority
     ) {
         return null;
@@ -37,8 +37,8 @@ public class ReminderController {
     public ReminderDto updateReminder(
             @PathVariable("list-id") Long listId,
             @PathVariable("reminder-id") Long reminderId,
-            @RequestParam String title,
-            @RequestParam(required = false) String note,
+            @RequestParam String name,
+            @RequestParam(required = false) String description,
             @RequestParam(required = false) String priority) {
         return null;
     }
