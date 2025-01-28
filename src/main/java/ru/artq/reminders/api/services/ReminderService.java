@@ -10,7 +10,7 @@ import ru.artq.reminders.store.repositories.ReminderRepository;
 public class ReminderService {
     private final ReminderRepository reminderRepository;
 
-    public ReminderEntity getReminders(){
+    public ReminderEntity getReminders() {
         return null;
     }
 

@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Entity
 @Table(name = "reminders")
