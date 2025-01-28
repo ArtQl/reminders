@@ -2,8 +2,9 @@ package ru.artq.reminders.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.artq.reminders.api.dto.ReminderDto;
+import ru.artq.reminders.api.dto.ListRemindersDto;
 import ru.artq.reminders.api.exception.BadRequestException;
 import ru.artq.reminders.api.service.ListRemindersService;
 
@@ -20,21 +21,21 @@ public class ListRemindersController {
     private final ListRemindersService listService;
 
     @GetMapping(FIND_LIST_REMINDERS)
-    public ReminderDto findListReminders(
+    public ListRemindersDto findListReminders(
             @PathVariable("list-id") Long listId) {
         checkListId(listId);
         return listService.findList(listId);
     }
 
     @PostMapping(CREATE_LIST_REMINDERS)
-    public ReminderDto createListReminders(
+    public ListRemindersDto createListReminders(
             @RequestParam String title) {
         checkListTitle(title);
         return listService.createList(title);
     }
 
     @PutMapping(UPDATE_LIST_REMINDERS)
-    public ReminderDto updateListReminders(
+    public ListRemindersDto updateListReminders(
             @PathVariable("list-id") Long listId,
             @RequestParam String title) {
         checkListId(listId);
@@ -43,10 +44,10 @@ public class ListRemindersController {
     }
 
     @DeleteMapping(DELETE_LIST_REMINDERS)
-    public Boolean deleteListReminders(
+    public ResponseEntity<Boolean> deleteListReminders(
             @PathVariable("list-id") Long listId) {
         checkListId(listId);
-        return listService.deleteList(listId);
+        return ResponseEntity.ok(listService.deleteList(listId));
     }
 
     private void checkListId(Long id) {
