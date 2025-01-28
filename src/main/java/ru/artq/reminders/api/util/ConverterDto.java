@@ -2,8 +2,8 @@ package ru.artq.reminders.api.util;
 
 import ru.artq.reminders.api.dto.ListRemindersDto;
 import ru.artq.reminders.api.dto.ReminderDto;
-import ru.artq.reminders.store.entities.ListRemindersEntity;
-import ru.artq.reminders.store.entities.ReminderEntity;
+import ru.artq.reminders.store.entity.ListRemindersEntity;
+import ru.artq.reminders.store.entity.ReminderEntity;
 
 public class ConverterDto {
 

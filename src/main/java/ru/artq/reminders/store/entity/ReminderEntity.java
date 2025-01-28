@@ -1,4 +1,4 @@
-package ru.artq.reminders.store.entities;
+package ru.artq.reminders.store.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

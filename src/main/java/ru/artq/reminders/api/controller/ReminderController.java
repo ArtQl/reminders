@@ -1,9 +1,9 @@
-package ru.artq.reminders.api.controllers;
+package ru.artq.reminders.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.artq.reminders.api.dto.ReminderDto;
-import ru.artq.reminders.api.services.ReminderService;
+import ru.artq.reminders.api.service.ReminderService;
 
 @RestController
 @RequestMapping("api/list-reminders")
