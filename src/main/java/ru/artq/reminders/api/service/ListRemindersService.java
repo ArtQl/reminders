@@ -54,13 +54,13 @@ public class ListRemindersService {
     }
 
     private void checkListExists(String title) {
-        listRepository.findByTitle(title).ifPresent((list) -> {
+        listRepository.findByName(title).ifPresent((list) -> {
             throw new AlreadyExistsException("The list '%s' already exists.".formatted(title));
         });
     }
 
     private void checkListExists(String title, Long listId) {
-        listRepository.findByTitle(title)
+        listRepository.findByName(title)
                 .filter(list -> !Objects.equals(list.getId(), listId))
                 .ifPresent(pr -> {
                     throw new AlreadyExistsException("Project '%s' already exists.".formatted(title));
