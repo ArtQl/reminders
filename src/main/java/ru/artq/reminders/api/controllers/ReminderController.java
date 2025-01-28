@@ -3,7 +3,7 @@ package ru.artq.reminders.api.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.artq.reminders.api.dto.ReminderDto;
-import ru.artq.reminders.api.services.ListRemindersService;
+import ru.artq.reminders.api.services.ReminderService;
 
 @RestController
 @RequestMapping("api/list-reminders")
@@ -14,7 +14,7 @@ public class ReminderController {
     private final static String UPDATE_REMINDER = "{list-id}/{reminder-id}";
     private final static String DELETE_REMINDER = "{list-id}/{reminder-id}";
 
-    private final ListRemindersService remindersService;
+    private final ReminderService remindersService;
 
     @GetMapping(FIND_REMINDER)
     public ReminderDto findReminder(
