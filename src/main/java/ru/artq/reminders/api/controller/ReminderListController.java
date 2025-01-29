@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.artq.reminders.api.dto.ReminderListDto;
 import ru.artq.reminders.api.service.ReminderListService;
-import ru.artq.reminders.api.util.ControllerValidate;
+import ru.artq.reminders.api.controller.helper.ValidateController;
 
 @RestController
 @RequestMapping("api/reminder-list")
@@ -20,27 +20,28 @@ public class ReminderListController {
 
     @GetMapping(FIND_REMINDER_LIST)
     public ReminderListDto findList(@PathVariable("list-id") Long listId) {
-        ControllerValidate.checkListId(listId);
+        ValidateController.checkListId(listId);
         return reminderListService.findList(listId);
     }
 
     @PostMapping(CREATE_REMINDER_LIST)
     public ReminderListDto createList(@RequestParam String title) {
-        ControllerValidate.checkListTitle(title);
+        ValidateController.checkListName(title);
         return reminderListService.createList(title);
     }
 
     @PutMapping(UPDATE_REMINDER_LIST)
     public ReminderListDto updateList(@PathVariable("list-id") Long listId,
                                       @RequestParam String title) {
-        ControllerValidate.checkListId(listId);
-        ControllerValidate.checkListTitle(title);
+        ValidateController.checkListId(listId);
+        ValidateController.checkListName(title);
         return reminderListService.updateList(listId, title);
     }
 
     @DeleteMapping(DELETE_REMINDER_LIST)
     public ResponseEntity<Boolean> deleteList(@PathVariable("list-id") Long listId) {
-        ControllerValidate.checkListId(listId);
-        return ResponseEntity.ok(reminderListService.deleteList(listId));
+        ValidateController.checkListId(listId);
+        reminderListService.deleteList(listId);
+        return ResponseEntity.ok(true);
     }
 }

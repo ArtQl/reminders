@@ -20,7 +20,10 @@ public class ReminderListEntity {
 
     private String name;
 
-    @OneToMany(mappedBy = "list", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "reminderList",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true )
     @Builder.Default
     private List<ReminderEntity> reminders = new ArrayList<>();
 }
