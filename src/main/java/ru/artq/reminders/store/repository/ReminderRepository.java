@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.artq.reminders.store.entity.ReminderEntity;
 
+import java.util.Optional;
+
 @Repository
 public interface ReminderRepository extends JpaRepository<ReminderEntity, Long> {
+    Optional<ReminderEntity> findByName(String name);
 }
