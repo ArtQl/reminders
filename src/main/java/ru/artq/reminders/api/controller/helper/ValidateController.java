@@ -20,4 +20,11 @@ public class ValidateController {
             throw new BadRequestException("Title: '%s' is not correct.".formatted(title));
         }
     }
+
+    public static void checkUsername(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            log.info("Username: {} is not correct.", username);
+            throw new BadRequestException("Username: '%s' is not correct.".formatted(username));
+        }
+    }
 }
