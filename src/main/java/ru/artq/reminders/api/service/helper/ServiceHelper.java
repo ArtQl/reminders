@@ -23,17 +23,11 @@ public class ServiceHelper {
                         ("List Reminders with ID '%d' not found.".formatted(listId)));
     }
 
-    public void checkListNameExists(String name) {
-        reminderListRepository.findByName(name).ifPresent((list) -> {
-            throw new AlreadyExistsException("List Reminders with name '%s' already exists.".formatted(name));
-        });
-    }
-
     public void checkListNameExists(String name, Long listId) {
         reminderListRepository.findByName(name)
                 .filter(list -> !Objects.equals(list.getId(), listId))
                 .ifPresent(pr -> {
-                    throw new AlreadyExistsException("List Reminders '%s' already exists.".formatted(name));
+                    throw new AlreadyExistsException("List Reminders with name: '%s' already exists.".formatted(name));
                 });
     }
 
@@ -45,15 +39,17 @@ public class ServiceHelper {
 
     public ReminderEntity findReminderById(ReminderListEntity list, Long reminderId) {
         return list.getReminders().stream()
-                .filter(r -> r.getId().equals(reminderId))
+                .filter(reminder -> reminder.getId().equals(reminderId))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException
                         ("Reminder with ID '%d' not found.".formatted(reminderId)));
     }
 
-    public void checkReminderNameExists(String name) {
-        reminderRepository.findByName(name).ifPresent((list) -> {
-            throw new AlreadyExistsException("Reminder '%s' already exists.".formatted(name));
-        });
+    public void checkReminderNameExists(String name, Long reminderId) {
+        reminderRepository.findByName(name)
+                .filter(reminder -> !Objects.equals(reminder.getId(), reminderId))
+                .ifPresent(pr -> {
+                    throw new AlreadyExistsException("Reminder with name: '%s' already exists.".formatted(name));
+                });
     }
 }

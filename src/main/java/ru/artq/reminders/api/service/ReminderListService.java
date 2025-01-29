@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.artq.reminders.api.dto.ReminderListDto;
+import ru.artq.reminders.api.exception.AlreadyExistsException;
 import ru.artq.reminders.api.service.helper.ServiceHelper;
 import ru.artq.reminders.api.util.ConverterDto;
 import ru.artq.reminders.store.entity.ReminderListEntity;
@@ -23,10 +24,11 @@ public class ReminderListService {
 
     @Transactional
     public ReminderListDto createList(String name) {
-        serviceHelper.checkListNameExists(name);
-        ReminderListEntity list = reminderListRepository
-                .saveAndFlush(ReminderListEntity.builder().name(name).build());
-        return ConverterDto.reminderListEntityToDto(list);
+        if (reminderListRepository.existsByName(name)) {
+            throw new AlreadyExistsException("List with name '%s' already exists.".formatted(name));
+        }
+        ReminderListEntity list = ReminderListEntity.builder().name(name).build();
+        return ConverterDto.reminderListEntityToDto(reminderListRepository.saveAndFlush(list));
     }
 
     @Transactional
@@ -34,8 +36,7 @@ public class ReminderListService {
         ReminderListEntity list = serviceHelper.findListById(listId);
         serviceHelper.checkListNameExists(name, listId);
         list.setName(name);
-        list = reminderListRepository.saveAndFlush(list);
-        return ConverterDto.reminderListEntityToDto(list);
+        return ConverterDto.reminderListEntityToDto(reminderListRepository.saveAndFlush(list));
     }
 
     @Transactional

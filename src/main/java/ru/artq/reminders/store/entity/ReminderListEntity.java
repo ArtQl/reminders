@@ -18,12 +18,13 @@ public class ReminderListEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "reminderList",
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
-            orphanRemoval = true )
+            orphanRemoval = true)
     @Builder.Default
     private List<ReminderEntity> reminders = new ArrayList<>();
 }
