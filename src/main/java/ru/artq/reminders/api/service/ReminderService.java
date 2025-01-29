@@ -53,7 +53,6 @@ public class ReminderService {
         serviceHelper.checkReminderNameExists(name);
 
         ReminderListEntity list = serviceHelper.findListById(listId);
-
         ReminderEntity entity = serviceHelper.findReminderById(list, reminderId);
 
         setReminderPriorityAndDescription(entity, description, priority);
