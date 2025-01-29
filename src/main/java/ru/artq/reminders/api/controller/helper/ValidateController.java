@@ -21,10 +21,16 @@ public class ValidateController {
         }
     }
 
-    public static void checkUsername(String username) {
-        if (username == null || username.trim().isEmpty()) {
-            log.info("Username: {} is not correct.", username);
-            throw new BadRequestException("Username: '%s' is not correct.".formatted(username));
+    public static void checkUserParams(String username, String email, String password) {
+        checkParams("Username", username);
+        checkParams("Email", email);
+        checkParams("Password", password);
+    }
+
+    private static void checkParams(String title, String param) {
+        if (param == null || param.trim().isEmpty()) {
+            log.info("{}: {} is not correct.", title, param);
+            throw new BadRequestException("%s: '%s' is not correct.".formatted(title, param));
         }
     }
 }

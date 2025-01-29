@@ -27,17 +27,21 @@ public class UserController {
     }
 
     @PostMapping(CREATE_USER)
-    public UserDto createUser(@RequestParam String username) {
-        ValidateController.checkUsername(username);
-        return userService.createUser(username);
+    public UserDto createUser(@RequestParam String username,
+                              @RequestParam String email,
+                              @RequestParam String password) {
+        ValidateController.checkUserParams(username, email, password);
+        return userService.createUser(username, email, password);
     }
 
     @PutMapping(UPDATE_USER)
     public UserDto updateUser(@PathVariable("user-id") Long userId,
-                                      @RequestParam String username) {
+                              @RequestParam String username,
+                              @RequestParam String email,
+                              @RequestParam String password) {
         ValidateController.checkId(userId);
-        ValidateController.checkUsername(username);
-        return userService.updateUser(userId, username);
+        ValidateController.checkUserParams(username, email, password);
+        return userService.updateUser(userId, username, email, password);
     }
 
     @DeleteMapping(DELETE_USER)
