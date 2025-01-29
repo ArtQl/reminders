@@ -19,10 +19,13 @@ public class ReminderListEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @OneToMany(mappedBy = "reminderList",
-            fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     @Builder.Default

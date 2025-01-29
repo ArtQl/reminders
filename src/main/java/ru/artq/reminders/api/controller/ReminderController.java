@@ -30,26 +30,26 @@ public class ReminderController {
     @PostMapping(CREATE_REMINDER)
     public ReminderDto createReminder(
             @PathVariable("list-id") Long listId,
-            @RequestParam String name,
+            @RequestParam String title,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String priority) {
         ValidateController.checkId(listId);
-        ValidateController.checkName(name);
-        return remindersService.createReminder(listId, name, description, priority);
+        ValidateController.checkTitle(title);
+        return remindersService.createReminder(listId, title, description, priority);
     }
 
     @PutMapping(UPDATE_REMINDER)
     public ReminderDto updateReminder(
             @PathVariable("list-id") Long listId,
             @PathVariable("reminder-id") Long reminderId,
-            @RequestParam String name,
+            @RequestParam String title,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String priority) {
         ValidateController.checkId(listId);
         ValidateController.checkId(reminderId);
-        ValidateController.checkName(name);
+        ValidateController.checkTitle(title);
         return remindersService.updateReminder(
-                listId, reminderId, name, description, priority);
+                listId, reminderId, title, description, priority);
     }
 
     @DeleteMapping(DELETE_REMINDER)

@@ -12,7 +12,7 @@ public class ReminderListDto {
     private Long id;
 
     @NonNull
-    private String name;
+    private String title;
 
     private List<ReminderDto> reminders;
 }

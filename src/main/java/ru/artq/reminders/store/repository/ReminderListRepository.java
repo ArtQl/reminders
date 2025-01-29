@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface ReminderListRepository extends JpaRepository<ReminderListEntity, Long> {
 
-    Optional<ReminderListEntity> findByName(String name);
+    Optional<ReminderListEntity> findByTitle(String title);
 
-    boolean existsByName(String name);
+    boolean existsByTitle(String title);
 }

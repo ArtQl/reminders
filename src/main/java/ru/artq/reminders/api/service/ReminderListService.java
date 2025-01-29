@@ -23,19 +23,19 @@ public class ReminderListService {
     }
 
     @Transactional
-    public ReminderListDto createList(String name) {
-        if (reminderListRepository.existsByName(name)) {
-            throw new AlreadyExistsException("List with name '%s' already exists.".formatted(name));
+    public ReminderListDto createList(String title) {
+        if (reminderListRepository.existsByTitle(title)) {
+            throw new AlreadyExistsException("List with title '%s' already exists.".formatted(title));
         }
-        ReminderListEntity list = ReminderListEntity.builder().name(name).build();
+        ReminderListEntity list = ReminderListEntity.builder().title(title).build();
         return ConverterDto.reminderListEntityToDto(reminderListRepository.saveAndFlush(list));
     }
 
     @Transactional
-    public ReminderListDto updateList(Long listId, String name) {
+    public ReminderListDto updateList(Long listId, String title) {
         ReminderListEntity list = serviceHelper.findListById(listId);
-        serviceHelper.checkListNameExists(name, listId);
-        list.setName(name);
+        serviceHelper.checkListTitleExists(title, listId);
+        list.setTitle(title);
         return ConverterDto.reminderListEntityToDto(reminderListRepository.saveAndFlush(list));
     }
 

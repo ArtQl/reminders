@@ -14,10 +14,10 @@ public class ValidateController {
         }
     }
 
-    public static void checkName(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            log.info("Name: {} is not correct.", name);
-            throw new BadRequestException("Name: '%s' is not correct.".formatted(name));
+    public static void checkTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            log.info("Title: {} is not correct.", title);
+            throw new BadRequestException("Title: '%s' is not correct.".formatted(title));
         }
     }
 }

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import ru.artq.reminders.api.exception.BadRequestException;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reminders")
@@ -21,7 +22,9 @@ public class ReminderEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
+
+    private LocalDateTime remind;
 
     @Builder.Default
     private String description = "";
@@ -38,15 +41,15 @@ public class ReminderEntity {
     private ReminderListEntity reminderList;
 
     public void updateDescription(String description) {
-        if (description != null) this.description = description;
+        if (description != null && !description.isBlank()) this.description = description;
     }
 
     public void updatePriority(String priority) {
-        if (priority == null) return;
+        if (priority == null || priority.isBlank()) return;
         try {
             this.priority = ReminderPriority.valueOf(priority.toUpperCase());
         } catch (IllegalArgumentException e) {
-            log.info("Priority name: {} is not correct.", priority);
+            log.warn("Invalid priority value: {}", priority);
             throw new BadRequestException("Invalid priority value: %s".formatted(priority));
         }
     }

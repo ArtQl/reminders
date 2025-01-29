@@ -28,14 +28,14 @@ public class ReminderService {
 
     @Transactional
     public ReminderDto createReminder(
-            Long listId, String name,
+            Long listId, String title,
             String description, String priority) {
-        if (reminderRepository.existsByName(name)) {
-            throw new AlreadyExistsException("Reminder with name '%s' already exists.".formatted(name));
+        if (reminderRepository.existsByTitle(title)) {
+            throw new AlreadyExistsException("Reminder with title '%s' already exists.".formatted(title));
         }
         ReminderListEntity list = serviceHelper.findListById(listId);
         ReminderEntity entity = ReminderEntity.builder()
-                .name(name).reminderList(list)
+                .title(title).reminderList(list)
                 .build();
         entity.updatePriority(priority);
         entity.updateDescription(description != null ? description : "");
@@ -47,12 +47,12 @@ public class ReminderService {
 
     @Transactional
     public ReminderDto updateReminder(
-            Long listId, Long reminderId, String name,
+            Long listId, Long reminderId, String title,
             String description, String priority) {
-        serviceHelper.checkReminderNameExists(name, reminderId);
+        serviceHelper.checkReminderTitleExists(title, reminderId);
         ReminderListEntity list = serviceHelper.findListById(listId);
         ReminderEntity entity = serviceHelper.findReminderById(list, reminderId);
-        entity.setName(name);
+        entity.setTitle(title);
         entity.updatePriority(priority);
         entity.updateDescription(description);
         return ConverterDto.reminderEntityToDto(

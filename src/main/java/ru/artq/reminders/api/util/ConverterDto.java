@@ -9,7 +9,7 @@ public class ConverterDto {
     public static ReminderDto reminderEntityToDto(ReminderEntity entity) {
         return ReminderDto.builder()
                 .id(entity.getId())
-                .name(entity.getName())
+                .title(entity.getTitle())
                 .description(entity.getDescription())
                 .priority(entity.getPriority().toString())
                 .createdAt(entity.getCreatedAt())
@@ -19,7 +19,7 @@ public class ConverterDto {
     public static ReminderListDto reminderListEntityToDto(ReminderListEntity entity) {
         return ReminderListDto.builder()
                 .id(entity.getId())
-                .name(entity.getName())
+                .title(entity.getTitle())
                 .reminders(entity.getReminders()
                         .stream().map(ConverterDto::reminderEntityToDto).toList())
                 .build();
