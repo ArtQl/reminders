@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface ReminderListRepository extends JpaRepository<ReminderListEntity, Long> {
 
     Optional<ReminderListEntity> findByName(String name);
+
+    boolean existsByName(String name);
 }

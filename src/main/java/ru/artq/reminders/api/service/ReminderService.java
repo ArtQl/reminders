@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.artq.reminders.api.dto.ReminderDto;
+import ru.artq.reminders.api.exception.AlreadyExistsException;
 import ru.artq.reminders.api.service.helper.ServiceHelper;
 import ru.artq.reminders.api.util.ConverterDto;
 import ru.artq.reminders.store.entity.ReminderEntity;
 import ru.artq.reminders.store.entity.ReminderListEntity;
-import ru.artq.reminders.store.entity.ReminderPriority;
 import ru.artq.reminders.store.repository.ReminderListRepository;
 import ru.artq.reminders.store.repository.ReminderRepository;
 
@@ -30,19 +30,18 @@ public class ReminderService {
     public ReminderDto createReminder(
             Long listId, String name,
             String description, String priority) {
-        serviceHelper.checkReminderNameExists(name);
-
+        if (reminderRepository.existsByName(name)) {
+            throw new AlreadyExistsException("Reminder with name '%s' already exists.".formatted(name));
+        }
         ReminderListEntity list = serviceHelper.findListById(listId);
-
         ReminderEntity entity = ReminderEntity.builder()
-                .name(name).reminderList(list).build();
-        setReminderPriorityAndDescription(entity, description, priority);
-
+                .name(name).reminderList(list)
+                .build();
+        entity.updatePriority(priority);
+        entity.updateDescription(description != null ? description : "");
         entity = reminderRepository.saveAndFlush(entity);
-
         list.getReminders().add(entity);
         reminderListRepository.save(list);
-
         return ConverterDto.reminderEntityToDto(entity);
     }
 
@@ -50,16 +49,14 @@ public class ReminderService {
     public ReminderDto updateReminder(
             Long listId, Long reminderId, String name,
             String description, String priority) {
-        serviceHelper.checkReminderNameExists(name);
-
+        serviceHelper.checkReminderNameExists(name, reminderId);
         ReminderListEntity list = serviceHelper.findListById(listId);
         ReminderEntity entity = serviceHelper.findReminderById(list, reminderId);
-
-        setReminderPriorityAndDescription(entity, description, priority);
-
-        entity = reminderRepository.saveAndFlush(entity);
-
-        return ConverterDto.reminderEntityToDto(entity);
+        entity.setName(name);
+        entity.updatePriority(priority);
+        entity.updateDescription(description);
+        return ConverterDto.reminderEntityToDto(
+                reminderRepository.save(entity));
     }
 
     @Transactional
@@ -68,15 +65,5 @@ public class ReminderService {
         ReminderEntity reminder = serviceHelper.findReminderById(list, reminderId);
         list.getReminders().remove(reminder);
         reminderListRepository.save(list);
-    }
-
-    private void setReminderPriorityAndDescription(
-            ReminderEntity entity, String description, String priority) {
-        if (description != null) {
-            entity.setDescription(description);
-        }
-        if (priority != null) {
-            entity.setPriority(ReminderPriority.valueOf(priority));
-        }
     }
 }

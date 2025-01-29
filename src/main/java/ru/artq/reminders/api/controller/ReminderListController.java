@@ -3,12 +3,12 @@ package ru.artq.reminders.api.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.artq.reminders.api.controller.helper.ValidateController;
 import ru.artq.reminders.api.dto.ReminderListDto;
 import ru.artq.reminders.api.service.ReminderListService;
-import ru.artq.reminders.api.controller.helper.ValidateController;
 
 @RestController
-@RequestMapping("api/reminder-list")
+@RequestMapping("/api/reminder-list")
 @RequiredArgsConstructor
 public class ReminderListController {
     private final static String FIND_REMINDER_LIST = "{list-id}";
@@ -20,27 +20,27 @@ public class ReminderListController {
 
     @GetMapping(FIND_REMINDER_LIST)
     public ReminderListDto findList(@PathVariable("list-id") Long listId) {
-        ValidateController.checkListId(listId);
+        ValidateController.checkId(listId);
         return reminderListService.findList(listId);
     }
 
     @PostMapping(CREATE_REMINDER_LIST)
-    public ReminderListDto createList(@RequestParam String title) {
-        ValidateController.checkListName(title);
-        return reminderListService.createList(title);
+    public ReminderListDto createList(@RequestParam String name) {
+        ValidateController.checkName(name);
+        return reminderListService.createList(name);
     }
 
     @PutMapping(UPDATE_REMINDER_LIST)
     public ReminderListDto updateList(@PathVariable("list-id") Long listId,
-                                      @RequestParam String title) {
-        ValidateController.checkListId(listId);
-        ValidateController.checkListName(title);
-        return reminderListService.updateList(listId, title);
+                                      @RequestParam String name) {
+        ValidateController.checkId(listId);
+        ValidateController.checkName(name);
+        return reminderListService.updateList(listId, name);
     }
 
     @DeleteMapping(DELETE_REMINDER_LIST)
     public ResponseEntity<Boolean> deleteList(@PathVariable("list-id") Long listId) {
-        ValidateController.checkListId(listId);
+        ValidateController.checkId(listId);
         reminderListService.deleteList(listId);
         return ResponseEntity.ok(true);
     }

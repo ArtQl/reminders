@@ -13,7 +13,6 @@ import ru.artq.reminders.api.exception.NotFoundException;
 @ControllerAdvice
 @Slf4j
 public class ExceptionController {
-
     @ExceptionHandler({AlreadyExistsException.class, BadRequestException.class})
     public ResponseEntity<ErrorDto> badRequestException(RuntimeException e) {
         log.warn("Bad Request: {}", e.getMessage());
@@ -33,7 +32,8 @@ public class ExceptionController {
     }
 
     private ResponseEntity<ErrorDto> buildResponseEntity(HttpStatus httpStatus, String message) {
-        return ResponseEntity.status(httpStatus).body(ErrorDto.builder()
+        return ResponseEntity.status(httpStatus)
+                .body(ErrorDto.builder()
                 .httpStatus(httpStatus.getReasonPhrase())
                 .description(message).build());
     }
