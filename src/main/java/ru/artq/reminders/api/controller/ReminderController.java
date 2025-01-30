@@ -10,6 +10,7 @@ import ru.artq.reminders.api.service.ReminderService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/users/{user-id}/reminders")
@@ -32,14 +33,14 @@ public class ReminderController {
     }
 
     @GetMapping(FIND_REMINDERS_BY_FILTERS)
-    public ReminderDto findReminderByFilters(
+    public List<ReminderDto> findReminderByFilters(
             @PathVariable("user-id") Long userId,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) LocalDate date,
             @RequestParam(required = false) LocalTime time,
-            @RequestParam(required = false) String order,
-            @RequestParam(required = false) Integer limit,
-            @RequestParam(required = false) Integer offset) {
+            @RequestParam(required = false, defaultValue = "desc") String order,
+            @RequestParam(required = false, defaultValue = "10") Integer limit,
+            @RequestParam(required = false, defaultValue = "1") Integer offset) {
         ValidateController.checkId(userId);
         ValidateController.checkTitle(title);
         if (limit <= 0) {
