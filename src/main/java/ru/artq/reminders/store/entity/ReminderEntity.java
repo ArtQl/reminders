@@ -41,7 +41,9 @@ public class ReminderEntity {
     private UserEntity user;
 
     public void updateDescription(String description) {
-        if (description != null && !description.isBlank()) this.description = description;
+        if (description != null && !description.isBlank()) {
+            this.description = description;
+        }
     }
 
     public void updatePriority(String priority) {

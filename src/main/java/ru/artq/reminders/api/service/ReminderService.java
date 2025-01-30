@@ -11,7 +11,6 @@ import ru.artq.reminders.api.util.ConverterDto;
 import ru.artq.reminders.store.entity.ReminderEntity;
 import ru.artq.reminders.store.entity.UserEntity;
 import ru.artq.reminders.store.repository.ReminderRepository;
-import ru.artq.reminders.store.repository.UserRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,14 +19,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ReminderService {
-    private final UserRepository userRepository;
     private final ReminderRepository reminderRepository;
     private final ServiceHelper serviceHelper;
 
     @Transactional(readOnly = true)
     public ReminderDto findReminder(Long userId, Long reminderId) {
-        UserEntity user = serviceHelper.findUserById(userId);
-        ReminderEntity entity = serviceHelper.findReminderById(user, reminderId);
+        ReminderEntity entity = serviceHelper
+                .findReminderById(userId, reminderId);
         return ConverterDto.reminderEntityToDto(entity);
     }
 
@@ -65,12 +63,13 @@ public class ReminderService {
         }
         UserEntity user = serviceHelper.findUserById(userId);
         ReminderEntity entity = ReminderEntity.builder()
-                .title(title).user(user).build();
+                .title(title)
+                .description(description)
+                .user(user)
+                .build();
         entity.updatePriority(priority);
-        entity.updateDescription(description != null ? description : "");
         entity = reminderRepository.saveAndFlush(entity);
         user.getReminders().add(entity);
-        userRepository.save(user);
         return ConverterDto.reminderEntityToDto(entity);
     }
 
@@ -78,8 +77,7 @@ public class ReminderService {
     public ReminderDto updateReminder(Long userId, Long reminderId, String title,
                                       String description, String priority) {
         serviceHelper.checkReminderTitleExists(title, reminderId);
-        UserEntity user = serviceHelper.findUserById(userId);
-        ReminderEntity entity = serviceHelper.findReminderById(user, reminderId);
+        ReminderEntity entity = serviceHelper.findReminderById(userId, reminderId);
         entity.setTitle(title);
         entity.updatePriority(priority);
         entity.updateDescription(description);
@@ -88,9 +86,8 @@ public class ReminderService {
 
     @Transactional
     public void deleteReminder(Long userId, Long reminderId) {
-        UserEntity user = serviceHelper.findUserById(userId);
-        ReminderEntity reminder = serviceHelper.findReminderById(user, reminderId);
-        user.getReminders().remove(reminder);
-        userRepository.save(user);
+        ReminderEntity reminder = serviceHelper
+                .findReminderById(userId, reminderId);
+        reminderRepository.delete(reminder);
     }
 }

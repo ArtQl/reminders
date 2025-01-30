@@ -40,13 +40,13 @@ public class ReminderController {
             @RequestParam(required = false) LocalTime time,
             @RequestParam(required = false, defaultValue = "desc") String order,
             @RequestParam(required = false, defaultValue = "10") Integer limit,
-            @RequestParam(required = false, defaultValue = "1") Integer offset) {
+            @RequestParam(required = false, defaultValue = "0") Integer offset) {
         ValidateController.checkId(userId);
         ValidateController.checkTitle(title);
         if (limit <= 0) {
             throw new BadRequestException("Limit value: '%s' is not correct.".formatted(limit));
         }
-        if (offset <= 0) {
+        if (offset < 0) {
             throw new BadRequestException("Offset value: '%s' is not correct.".formatted(offset));
         }
         return remindersService.findReminder(userId, title, date, time, order, limit, offset);

@@ -23,6 +23,22 @@ public class ServiceHelper {
                         ("User with ID '%d' not found.".formatted(userId)));
     }
 
+    public ReminderEntity findReminderById(Long userId, Long reminderId) {
+        return reminderRepository.findById(reminderId)
+                .filter(rem -> rem.getUser().getId().equals(userId))
+                .orElseThrow(() -> new NotFoundException
+                        ("Reminder with ID '%d' not found.".formatted(reminderId)));
+    }
+
+    public void checkReminderTitleExists(String title, Long reminderId) {
+        reminderRepository.findByTitle(title)
+                .filter(rem -> !Objects.equals(rem.getId(), reminderId))
+                .ifPresent(pr -> {
+                    throw new AlreadyExistsException("Reminder with title: '%s' already exists."
+                            .formatted(title));
+                });
+    }
+
     public void checkUsernameExist(String username) {
         if (userRepository.existsByUsername(username)) {
             throw new AlreadyExistsException("Username '%s' already exists.".formatted(username));
@@ -33,22 +49,5 @@ public class ServiceHelper {
         if (userRepository.existsByEmail(email)) {
             throw new AlreadyExistsException("Email '%s' already exists.".formatted(email));
         }
-    }
-
-    public ReminderEntity findReminderById(UserEntity user, Long reminderId) {
-        return user.getReminders().stream()
-                .filter(reminder -> reminder.getId().equals(reminderId))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException
-                        ("Reminder with ID '%d' not found.".formatted(reminderId)));
-    }
-
-    public void checkReminderTitleExists(String title, Long reminderId) {
-        reminderRepository.findByTitle(title)
-                .filter(reminder -> !Objects.equals(reminder.getId(), reminderId))
-                .ifPresent(pr -> {
-                    throw new AlreadyExistsException("Reminder with title: '%s' already exists."
-                            .formatted(title));
-                });
     }
 }
