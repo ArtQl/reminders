@@ -30,17 +30,18 @@ public class UserController {
     public UserDto createUser(@RequestParam String username,
                               @RequestParam String email,
                               @RequestParam String password) {
-        ValidateController.checkUserParams(username, email, password);
+        ValidateController.checkUsername(username);
+        ValidateController.checkEmail(email);
+        ValidateController.checkPassword(password);
         return userService.createUser(username, email, password);
     }
 
     @PutMapping(UPDATE_USER)
     public UserDto updateUser(@PathVariable("user-id") Long userId,
-                              @RequestParam String username,
-                              @RequestParam String email,
-                              @RequestParam String password) {
+                              @RequestParam(required = false) String username,
+                              @RequestParam(required = false) String email,
+                              @RequestParam(required = false) String password) {
         ValidateController.checkId(userId);
-        ValidateController.checkUserParams(username, email, password);
         return userService.updateUser(userId, username, email, password);
     }
 
