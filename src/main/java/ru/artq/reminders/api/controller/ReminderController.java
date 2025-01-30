@@ -9,6 +9,7 @@ import ru.artq.reminders.api.exception.BadRequestException;
 import ru.artq.reminders.api.service.ReminderService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -57,10 +58,11 @@ public class ReminderController {
             @PathVariable("user-id") Long userId,
             @RequestParam String title,
             @RequestParam(required = false) String description,
-            @RequestParam(required = false) String priority) {
+            @RequestParam(required = false) String priority,
+            @RequestParam(required = false) LocalDateTime remind) {
         ValidateController.checkId(userId);
         ValidateController.checkTitle(title);
-        return remindersService.createReminder(userId, title, description, priority);
+        return remindersService.createReminder(userId, title, description, priority, remind);
     }
 
     @PutMapping(UPDATE_REMINDER)
@@ -69,10 +71,11 @@ public class ReminderController {
             @PathVariable("reminder-id") Long reminderId,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String description,
-            @RequestParam(required = false) String priority) {
+            @RequestParam(required = false) String priority,
+            @RequestParam(required = false) LocalDateTime remind) {
         ValidateController.checkId(userId);
         ValidateController.checkId(reminderId);
-        return remindersService.updateReminder(userId, reminderId, title, description, priority);
+        return remindersService.updateReminder(userId, reminderId, title, description, priority, remind);
     }
 
     @DeleteMapping(DELETE_REMINDER)

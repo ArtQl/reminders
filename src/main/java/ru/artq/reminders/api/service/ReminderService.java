@@ -13,6 +13,7 @@ import ru.artq.reminders.store.entity.UserEntity;
 import ru.artq.reminders.store.repository.ReminderRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -57,7 +58,8 @@ public class ReminderService {
 
     @Transactional
     public ReminderDto createReminder(Long userId, String title,
-                                      String description, String priority) {
+                                      String description, String priority,
+                                      LocalDateTime dateTime) {
         if (reminderRepository.existsByTitle(title)) {
             throw new AlreadyExistsException("Reminder with title '%s' already exists.".formatted(title));
         }
@@ -65,6 +67,7 @@ public class ReminderService {
         ReminderEntity entity = ReminderEntity.builder()
                 .title(title)
                 .user(user)
+                .remind(dateTime)
                 .build();
         entity.updatePriority(priority);
         entity.updateDescription(description);
@@ -76,12 +79,13 @@ public class ReminderService {
     @Transactional
     public ReminderDto updateReminder(Long userId, Long reminderId,
                                       String title, String description,
-                                      String priority) {
+                                      String priority, LocalDateTime remind) {
         ReminderEntity entity = serviceHelper.findReminderById(userId, reminderId);
         if (title != null && !title.isBlank()) {
             serviceHelper.checkReminderTitleExists(title, reminderId);
             entity.setTitle(title);
         }
+        if (remind != null) entity.setRemind(remind);
         entity.updateDescription(description);
         entity.updatePriority(priority);
         return ConverterDto.reminderEntityToDto(reminderRepository.save(entity));
