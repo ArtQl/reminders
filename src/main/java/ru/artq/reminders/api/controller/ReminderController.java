@@ -1,6 +1,7 @@
 package ru.artq.reminders.api.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.artq.reminders.api.controller.helper.ValidateController;
@@ -59,7 +60,8 @@ public class ReminderController {
             @RequestParam String title,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String priority,
-            @RequestParam(required = false) LocalDateTime remind) {
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime remind) {
         ValidateController.checkId(userId);
         ValidateController.checkTitle(title);
         return remindersService.createReminder(userId, title, description, priority, remind);
@@ -72,7 +74,8 @@ public class ReminderController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String priority,
-            @RequestParam(required = false) LocalDateTime remind) {
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime remind) {
         ValidateController.checkId(userId);
         ValidateController.checkId(reminderId);
         return remindersService.updateReminder(userId, reminderId, title, description, priority, remind);
