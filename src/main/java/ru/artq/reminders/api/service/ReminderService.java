@@ -12,6 +12,9 @@ import ru.artq.reminders.store.entity.UserEntity;
 import ru.artq.reminders.store.repository.ReminderRepository;
 import ru.artq.reminders.store.repository.UserRepository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Service
 @RequiredArgsConstructor
 public class ReminderService {
@@ -24,6 +27,14 @@ public class ReminderService {
         UserEntity user = serviceHelper.findUserById(userId);
         ReminderEntity entity = serviceHelper.findReminderById(user, reminderId);
         return ConverterDto.reminderEntityToDto(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public ReminderDto findReminder(Long userId, String title,
+                                    LocalDate date, LocalTime time,
+                                    String order, Integer limit, Integer offset) {
+        return null;
+
     }
 
     @Transactional
