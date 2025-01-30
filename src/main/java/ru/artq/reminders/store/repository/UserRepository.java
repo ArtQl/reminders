@@ -6,4 +6,7 @@ import ru.artq.reminders.store.entity.UserEntity;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
+
+    boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
 }
