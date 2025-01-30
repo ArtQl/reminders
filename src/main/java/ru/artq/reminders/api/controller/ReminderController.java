@@ -67,7 +67,7 @@ public class ReminderController {
     public ReminderDto updateReminder(
             @PathVariable("user-id") Long userId,
             @PathVariable("reminder-id") Long reminderId,
-            @RequestParam String title,
+            @RequestParam(required = false) String title,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String priority) {
         ValidateController.checkId(userId);

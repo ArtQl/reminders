@@ -64,23 +64,26 @@ public class ReminderService {
         UserEntity user = serviceHelper.findUserById(userId);
         ReminderEntity entity = ReminderEntity.builder()
                 .title(title)
-                .description(description)
                 .user(user)
                 .build();
         entity.updatePriority(priority);
+        entity.updateDescription(description);
         entity = reminderRepository.saveAndFlush(entity);
         user.getReminders().add(entity);
         return ConverterDto.reminderEntityToDto(entity);
     }
 
     @Transactional
-    public ReminderDto updateReminder(Long userId, Long reminderId, String title,
-                                      String description, String priority) {
-        serviceHelper.checkReminderTitleExists(title, reminderId);
+    public ReminderDto updateReminder(Long userId, Long reminderId,
+                                      String title, String description,
+                                      String priority) {
         ReminderEntity entity = serviceHelper.findReminderById(userId, reminderId);
-        entity.setTitle(title);
-        entity.updatePriority(priority);
+        if (title != null && !title.isBlank()) {
+            serviceHelper.checkReminderTitleExists(title, reminderId);
+            entity.setTitle(title);
+        }
         entity.updateDescription(description);
+        entity.updatePriority(priority);
         return ConverterDto.reminderEntityToDto(reminderRepository.save(entity));
     }
 
