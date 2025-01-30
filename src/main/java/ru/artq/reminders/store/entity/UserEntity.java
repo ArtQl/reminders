@@ -32,5 +32,6 @@ public class UserEntity {
     private Instant createdAt = Instant.now();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReminderListEntity> reminderLists = new ArrayList<>();
+    @Builder.Default
+    private List<ReminderEntity> reminders = new ArrayList<>();
 }

@@ -8,7 +8,7 @@ import ru.artq.reminders.api.dto.ReminderDto;
 import ru.artq.reminders.api.service.ReminderService;
 
 @RestController
-@RequestMapping("api/reminder-list/{list-id}/reminder")
+@RequestMapping("api/users/{user-id}/reminders")
 @RequiredArgsConstructor
 public class ReminderController {
     private final static String FIND_REMINDER = "{reminder-id}";
@@ -20,45 +20,43 @@ public class ReminderController {
 
     @GetMapping(FIND_REMINDER)
     public ReminderDto findReminder(
-            @PathVariable("list-id") Long listId,
+            @PathVariable("user-id") Long userId,
             @PathVariable("reminder-id") Long reminderId) {
-        ValidateController.checkId(listId);
         ValidateController.checkId(reminderId);
-        return remindersService.findReminder(listId, reminderId);
+        return remindersService.findReminder(userId, reminderId);
     }
 
     @PostMapping(CREATE_REMINDER)
     public ReminderDto createReminder(
-            @PathVariable("list-id") Long listId,
+            @PathVariable("user-id") Long userId,
             @RequestParam String title,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String priority) {
-        ValidateController.checkId(listId);
+        ValidateController.checkId(userId);
         ValidateController.checkTitle(title);
-        return remindersService.createReminder(listId, title, description, priority);
+        return remindersService.createReminder(userId, title, description, priority);
     }
 
     @PutMapping(UPDATE_REMINDER)
     public ReminderDto updateReminder(
-            @PathVariable("list-id") Long listId,
+            @PathVariable("user-id") Long userId,
             @PathVariable("reminder-id") Long reminderId,
             @RequestParam String title,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String priority) {
-        ValidateController.checkId(listId);
+        ValidateController.checkId(userId);
         ValidateController.checkId(reminderId);
         ValidateController.checkTitle(title);
-        return remindersService.updateReminder(
-                listId, reminderId, title, description, priority);
+        return remindersService.updateReminder(userId, reminderId, title, description, priority);
     }
 
     @DeleteMapping(DELETE_REMINDER)
     public ResponseEntity<Boolean> deleteReminder(
-            @PathVariable("list-id") Long listId,
+            @PathVariable("user-id") Long userId,
             @PathVariable("reminder-id") Long reminderId) {
-        ValidateController.checkId(listId);
+        ValidateController.checkId(userId);
         ValidateController.checkId(reminderId);
-        remindersService.deleteReminder(listId, reminderId);
+        remindersService.deleteReminder(userId, reminderId);
         return ResponseEntity.ok(true);
     }
 }

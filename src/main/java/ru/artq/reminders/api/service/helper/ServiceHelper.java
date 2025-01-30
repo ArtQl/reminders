@@ -5,40 +5,38 @@ import org.springframework.stereotype.Service;
 import ru.artq.reminders.api.exception.AlreadyExistsException;
 import ru.artq.reminders.api.exception.NotFoundException;
 import ru.artq.reminders.store.entity.ReminderEntity;
-import ru.artq.reminders.store.entity.ReminderListEntity;
-import ru.artq.reminders.store.repository.ReminderListRepository;
+import ru.artq.reminders.store.entity.UserEntity;
 import ru.artq.reminders.store.repository.ReminderRepository;
+import ru.artq.reminders.store.repository.UserRepository;
 
 import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class ServiceHelper {
-    private final ReminderListRepository reminderListRepository;
+    private final UserRepository userRepository;
     private final ReminderRepository reminderRepository;
 
-    public ReminderListEntity findListById(Long listId) {
-        return reminderListRepository.findById(listId)
+    public UserEntity findUserById(Long userId) {
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException
-                        ("List Reminders with ID '%d' not found.".formatted(listId)));
+                        ("User with ID '%d' not found.".formatted(userId)));
     }
 
-    public void checkListTitleExists(String title, Long listId) {
-        reminderListRepository.findByTitle(title)
-                .filter(list -> !Objects.equals(list.getId(), listId))
-                .ifPresent(pr -> {
-                    throw new AlreadyExistsException("List Reminders with title: '%s' already exists.".formatted(title));
-                });
+    public void checkUsernameExist(String username) {
+        if (userRepository.existsByUsername(username)) {
+            throw new AlreadyExistsException("Username '%s' already exists.".formatted(username));
+        }
     }
 
-    public ReminderEntity findReminderById(Long listId) {
-        return reminderRepository.findById(listId)
-                .orElseThrow(() -> new NotFoundException
-                        ("Reminder with ID '%d' not found.".formatted(listId)));
+    public void checkEmailExist(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new AlreadyExistsException("Email '%s' already exists.".formatted(email));
+        }
     }
 
-    public ReminderEntity findReminderById(ReminderListEntity list, Long reminderId) {
-        return list.getReminders().stream()
+    public ReminderEntity findReminderById(UserEntity user, Long reminderId) {
+        return user.getReminders().stream()
                 .filter(reminder -> reminder.getId().equals(reminderId))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException
@@ -49,7 +47,8 @@ public class ServiceHelper {
         reminderRepository.findByTitle(title)
                 .filter(reminder -> !Objects.equals(reminder.getId(), reminderId))
                 .ifPresent(pr -> {
-                    throw new AlreadyExistsException("Reminder with title: '%s' already exists.".formatted(title));
+                    throw new AlreadyExistsException("Reminder with title: '%s' already exists."
+                            .formatted(title));
                 });
     }
 }
