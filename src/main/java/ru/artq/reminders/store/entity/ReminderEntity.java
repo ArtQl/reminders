@@ -37,8 +37,8 @@ public class ReminderEntity {
     private Instant createdAt = Instant.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reminder_list_id", nullable = false)
-    private ReminderListEntity reminderList;
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
     public void updateDescription(String description) {
         if (description != null && !description.isBlank()) this.description = description;

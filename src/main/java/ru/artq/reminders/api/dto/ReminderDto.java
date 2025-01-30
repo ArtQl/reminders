@@ -3,6 +3,7 @@ package ru.artq.reminders.api.dto;
 import lombok.*;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -14,9 +15,13 @@ public class ReminderDto {
     @NonNull
     private String title;
 
+    private LocalDateTime remind;
+
     private String description;
 
     private String priority;
 
     private Instant createdAt;
+
+    private Long userId;
 }

@@ -18,5 +18,5 @@ public class UserDto {
 
     private Instant createdAt;
 
-    private List<ReminderListDto> reminderLists;
+    private List<ReminderDto> reminders;
 }
