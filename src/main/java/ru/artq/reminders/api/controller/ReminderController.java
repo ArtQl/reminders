@@ -72,7 +72,6 @@ public class ReminderController {
             @RequestParam(required = false) String priority) {
         ValidateController.checkId(userId);
         ValidateController.checkId(reminderId);
-        ValidateController.checkTitle(title);
         return remindersService.updateReminder(userId, reminderId, title, description, priority);
     }
 
