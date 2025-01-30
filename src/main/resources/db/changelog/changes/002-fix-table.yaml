@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002
+      author: Artem_Kazakov
+      changes:
+        - addAutoIncrement:
+            tableName: users
+            columnName: id
+        - addAutoIncrement:
+            tableName: reminders
+            columnName: id
