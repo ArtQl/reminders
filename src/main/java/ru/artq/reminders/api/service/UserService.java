@@ -4,14 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.artq.reminders.api.dto.UserDto;
-import ru.artq.reminders.api.exception.AlreadyExistsException;
 import ru.artq.reminders.api.exception.NotFoundException;
 import ru.artq.reminders.api.service.helper.ServiceHelper;
 import ru.artq.reminders.api.util.ConverterDto;
 import ru.artq.reminders.store.entity.UserEntity;
 import ru.artq.reminders.store.repository.UserRepository;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,19 +28,25 @@ public class UserService {
                         ("User with email '%s' not found.".formatted(email)));
     }
 
+//    @Transactional(readOnly = true)
+//    public Optional<UserEntity> findUserByUsername(String username) {
+//        return userRepository.findByUsername(username).;
+//    }
+
     @Transactional(readOnly = true)
-    public UserEntity findUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException
-                        ("User with username '%s' not found.".formatted(username)));
+    public Long findTelegramChatId(Long userId) {
+        UserEntity entity =  userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id '%s' not found.".formatted(userId)));
+        return entity.getTelegramChatId();
     }
 
     @Transactional
-    public UserDto createUser(String username, String email, String password) {
+    public UserDto createUser(Long chatId, String username, String email, String password) {
         serviceHelper.checkUsernameExist(username);
         serviceHelper.checkEmailExist(email);
         UserEntity user = userRepository.saveAndFlush(
                 UserEntity.builder()
+                        .telegramChatId(chatId)
                         .username(username)
                         .email(email)
                         .password(password)

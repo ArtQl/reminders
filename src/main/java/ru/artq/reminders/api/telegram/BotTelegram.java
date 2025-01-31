@@ -1,4 +1,4 @@
-package ru.artq.reminders.telegram;
+package ru.artq.reminders.api.telegram;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,23 +48,23 @@ public class BotTelegram implements SpringLongPollingBot, LongPollingSingleThrea
     }
 
     private void handleDirections(Update update) {
-        if (!update.hasMessage() && !update.getMessage().hasText()) return;
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            String text = update.getMessage().getText();
+            long chatId = update.getMessage().getChatId();
 
-        String text = update.getMessage().getText();
-        long chatId = update.getMessage().getChatId();
+            if (!text.startsWith("/login") && user == null) {
+                sendMessage(chatId, MessagesTelegram.LOGIN_MESSAGE);
+            } else if(text.startsWith("/login")) {
+                handleLogin(chatId, text, update.getMessage().getFrom().getUserName());
+            }
 
-        if (!text.startsWith("/login") && user == null) {
-            sendMessage(update.getMessage().getChatId(), MessagesTelegram.LOGIN_MESSAGE);
-        } else if (text.startsWith("/login") && user == null) {
-            handleLogin(update);
-        }
-
-        if (text.startsWith("/new")) {
-            handleNew(chatId, text);
-        } else if (text.startsWith("/find")) {
-            handleFind(chatId, text);
-        } else {
-            sendMessage(chatId, MessagesTelegram.START_MESSAGE);
+            if (text.startsWith("/new")) {
+                handleNew(chatId, text);
+            } else if (text.startsWith("/find")) {
+                handleFind(chatId);
+            } else {
+                sendMessage(chatId, MessagesTelegram.START_MESSAGE);
+            }
         }
     }
 
@@ -80,37 +80,44 @@ public class BotTelegram implements SpringLongPollingBot, LongPollingSingleThrea
             String priority = parts[3];
             LocalDateTime dateTime = LocalDateTime.parse(parts[4]);
             reminderService.createReminder(user.getId(), title, description, priority, dateTime);
+            sendMessage(chatId, "Напоминание добавлено.");
         } catch (Exception e) {
             sendMessage(chatId, e.getMessage());
         }
     }
 
-    private void handleFind(long chatId, String text) {
+    private void handleFind(long chatId) {
+        StringBuilder sb = new StringBuilder("Список ваших напоминаний:\n");
         try {
             List<ReminderDto> list= reminderService.findReminder(user.getId());
-            sendMessage(chatId, list.toString());
+            list.forEach(rem -> {
+                sb.append(rem);
+                sb.append("\n");
+            });
+            sendMessage(chatId, sb.toString());
         } catch (Exception e) {
             sendMessage(chatId, e.getMessage());
         }
     }
 
-    private void handleLogin(Update update) {
-        String[] parts = update.getMessage().getText().split(" ");
+    private void handleLogin(long chatId, String text, String username) {
+        if (user != null) {
+            sendMessage(chatId, "Вы уже успешно вошли в системе!");
+        }
+        String[] parts = text.split(" ");
         if (parts.length != 3) {
-            sendMessage(update.getMessage().getChatId(),
-                    "Неверный формат. Используйте: /login [email] [password]");
+            sendMessage(chatId, "Неверный формат. Используйте: /login [email] [password]");
             return;
         }
-
         try {
-            user = userService.createUser(update.getMessage().getFrom().getUserName(), parts[1], parts[2]);
-            sendMessage(update.getMessage().getChatId(), "Вы успешно вошли в систему!");
+            user = userService.createUser(chatId, username, parts[1], parts[2]);
+            sendMessage(chatId, "Вы успешно вошли в систему!");
         } catch (RuntimeException e) {
-            sendMessage(update.getMessage().getChatId(), e.getMessage());
+            sendMessage(chatId, e.getMessage());
         }
     }
 
-    private void sendMessage(Long chat_id, String text) {
+    public void sendMessage(Long chat_id, String text) {
         try {
             telegramClient.execute(SendMessage.builder()
                     .chatId(chat_id).text(text).build());

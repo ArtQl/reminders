@@ -19,6 +19,8 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long telegramChatId;
+
     @Column(nullable = false, unique = true)
     private String username;
 

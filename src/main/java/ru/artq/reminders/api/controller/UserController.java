@@ -27,13 +27,14 @@ public class UserController {
     }
 
     @PostMapping(CREATE_USER)
-    public UserDto createUser(@RequestParam String username,
+    public UserDto createUser(@RequestParam Long telegramChatId,
+                              @RequestParam String username,
                               @RequestParam String email,
                               @RequestParam String password) {
         ValidateController.checkUsername(username);
         ValidateController.checkEmail(email);
         ValidateController.checkPassword(password);
-        return userService.createUser(username, email, password);
+        return userService.createUser(telegramChatId, username, email, password);
     }
 
     @PutMapping(UPDATE_USER)

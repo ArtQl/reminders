@@ -1,4 +1,4 @@
-package ru.artq.reminders.telegram;
+package ru.artq.reminders.api.telegram;
 
 public class MessagesTelegram {
     public static String START_MESSAGE = """
@@ -16,5 +16,5 @@ public class MessagesTelegram {
             /remove - удалить напоминание.
             """;
 
-    public static String LOGIN_MESSAGE = "Для входа в систему Введите /login [email] [password]";
+    public static String LOGIN_MESSAGE = "Для входа в систему введите /login [email] [password]";
 }

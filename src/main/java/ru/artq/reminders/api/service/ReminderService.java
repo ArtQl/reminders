@@ -56,6 +56,12 @@ public class ReminderService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<ReminderDto> findByRemindTimeBefore(LocalDateTime dateTime) {
+        return reminderRepository.findByRemindBefore(dateTime)
+                .stream().map(ConverterDto::reminderEntityToDto).toList();
+    }
+
     @Transactional
     public ReminderDto createReminder(Long userId, String title,
                                       String description, String priority,
