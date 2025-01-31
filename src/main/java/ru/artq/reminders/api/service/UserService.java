@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.artq.reminders.api.dto.UserDto;
+import ru.artq.reminders.api.exception.AlreadyExistsException;
 import ru.artq.reminders.api.exception.NotFoundException;
 import ru.artq.reminders.api.service.helper.ServiceHelper;
 import ru.artq.reminders.api.util.ConverterDto;
 import ru.artq.reminders.store.entity.UserEntity;
 import ru.artq.reminders.store.repository.UserRepository;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +22,20 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserDto findUser(Long userId) {
         return ConverterDto.userEntityToDto(serviceHelper.findUserById(userId));
+    }
+
+    @Transactional(readOnly = true)
+    public UserEntity findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException
+                        ("User with email '%s' not found.".formatted(email)));
+    }
+
+    @Transactional(readOnly = true)
+    public UserEntity findUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException
+                        ("User with username '%s' not found.".formatted(username)));
     }
 
     @Transactional

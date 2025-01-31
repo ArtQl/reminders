@@ -97,4 +97,12 @@ public class ReminderService {
                 .findReminderById(userId, reminderId);
         reminderRepository.delete(reminder);
     }
+
+    public List<ReminderDto> findReminder(Long userId) {
+        List<ReminderEntity> reminders = reminderRepository.findByUserId(userId);
+        if (reminders.isEmpty()) {
+            throw new NotFoundException("User reminder %d not found".formatted(userId));
+        }
+        return reminders.stream().map(ConverterDto::reminderEntityToDto).toList();
+    }
 }
