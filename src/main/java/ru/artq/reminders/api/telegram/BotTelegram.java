@@ -94,6 +94,7 @@ public class BotTelegram implements SpringLongPollingBot, LongPollingSingleThrea
                 sb.append(rem);
                 sb.append("\n");
             });
+
             sendMessage(chatId, sb.toString());
         } catch (Exception e) {
             sendMessage(chatId, e.getMessage());
