@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.artq.reminders.api.dto.UserDto;
+import ru.artq.reminders.api.exception.BadRequestException;
 import ru.artq.reminders.api.exception.NotFoundException;
 import ru.artq.reminders.api.service.helper.ServiceHelper;
 import ru.artq.reminders.api.util.ConverterDto;
@@ -28,16 +29,23 @@ public class UserService {
                         ("User with email '%s' not found.".formatted(email)));
     }
 
-//    @Transactional(readOnly = true)
-//    public Optional<UserEntity> findUserByUsername(String username) {
-//        return userRepository.findByUsername(username).;
-//    }
+    @Transactional(readOnly = true)
+    public Boolean findUserByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
 
     @Transactional(readOnly = true)
     public Long findTelegramChatId(Long userId) {
         UserEntity entity =  userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id '%s' not found.".formatted(userId)));
         return entity.getTelegramChatId();
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto findUserByEmailAndPassword(String username, String password) {
+        UserEntity user = userRepository.findByEmailAndPassword(username, password)
+                .orElseThrow(() -> new BadRequestException("Неверный логин или пароль!"));
+        return ConverterDto.userEntityToDto(user);
     }
 
     @Transactional
