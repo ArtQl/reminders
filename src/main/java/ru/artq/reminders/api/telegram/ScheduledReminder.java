@@ -17,12 +17,13 @@ public class ScheduledReminder {
     private final ReminderService reminderService;
     private final UserService userService;
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 10000)
     public void checkReminders() {
+        if (telegramBot.getUser() == null) return;
         List<ReminderDto> list = reminderService.findByRemindTimeBefore(LocalDateTime.now());
         list.forEach(rem -> {
             Long chatId = userService.findTelegramChatId(rem.getUserId());
-            telegramBot.sendMessage(chatId, "Напоминание: " + rem.getTitle());
+            telegramBot.sendMessage(chatId, "Напоминание: " + rem.getTitle() + ", Описание:" +rem.getDescription());
         });
     }
 }

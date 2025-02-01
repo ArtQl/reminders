@@ -23,17 +23,28 @@ import ru.artq.reminders.api.dto.UserDto;
 public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
     private final TelegramClient telegramClient = new OkHttpTelegramClient(getBotToken());
     private final CommandFactory commandFactory;
+    private final UserSessionService userSessionService;
     private UserDto user;
 
     @Override
     public void consume(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
+            long chatId = update.getMessage().getChatId();
+            UserSession session = userSessionService.getUserSession(chatId);
             String command = update.getMessage().getText().split(" ")[0];
-            commandFactory.getCommand(command)
-                    .ifPresentOrElse(
-                            cmd -> cmd.execute(update),
-                            () -> sendMessage(update.getMessage().getChatId(), MessagesTelegram.START_MESSAGE)
-                    );
+
+            if (session.getState() == UserStateType.START) {
+                commandFactory.getCommand(command)
+                        .ifPresentOrElse(
+                                cmd -> cmd.execute(update),
+                                () -> sendMessage(update.getMessage().getChatId(),
+                                        user != null ? MessagesTelegram.LOGIN_MESSAGE :
+                                                MessagesTelegram.START_MESSAGE)
+                        );
+            } else {
+                commandFactory.getCommand(userSessionService.getUserSession(chatId).getCommand())
+                        .ifPresent(cmd -> cmd.execute(update));
+            }
         }
     }
 
@@ -47,16 +58,6 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
         return this;
     }
 
-    public Boolean checkUserLogin(Update update) {
-        if (user != null) {
-            sendMessage(update.getMessage().getChatId(), MessagesTelegram.LOGIN_MESSAGE);
-            return true;
-        } else {
-            sendMessage(update.getMessage().getChatId(), MessagesTelegram.NO_LOGIN_MESSAGE);
-            return false;
-        }
-    }
-
     public void sendMessage(Long chat_id, String text) {
         try {
             telegramClient.execute(SendMessage.builder()
@@ -64,5 +65,20 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
         } catch (TelegramApiException e) {
             log.warn("Telegram error: {} ", e.getMessage());
         }
+    }
+
+    public Boolean checkUserLogin(Update update) {
+        if (user != null) {
+            sendMessage(update.getMessage().getChatId(), MessagesTelegram.LOGIN_MESSAGE);
+            return true;
+        }
+        return false;
+    }
+    public Boolean checkUserNotLogin(Update update) {
+        if (user == null) {
+            sendMessage(update.getMessage().getChatId(), MessagesTelegram.NO_LOGIN_MESSAGE);
+            return true;
+        }
+        return false;
     }
 }

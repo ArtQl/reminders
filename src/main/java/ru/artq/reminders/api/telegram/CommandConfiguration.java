@@ -1,8 +1,12 @@
 package ru.artq.reminders.api.telegram;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PostMapping;
+import ru.artq.reminders.api.telegram.command.CreateReminderCommand;
+import ru.artq.reminders.api.telegram.command.FindReminderCommand;
+import ru.artq.reminders.api.telegram.command.LoginCommand;
+import ru.artq.reminders.api.telegram.command.RegistrationCommand;
 
 @Component
 @RequiredArgsConstructor
@@ -13,7 +17,7 @@ public class CommandConfiguration {
     private final CreateReminderCommand createReminderCommand;
     private final FindReminderCommand findReminderCommand;
 
-    @PostMapping
+    @PostConstruct
     public void registerCommands() {
         commandFactory.register("/registration", registrationCommand);
         commandFactory.register("/login", loginCommand);

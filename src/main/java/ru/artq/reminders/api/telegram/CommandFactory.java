@@ -2,6 +2,7 @@ package ru.artq.reminders.api.telegram;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.artq.reminders.api.telegram.command.Command;
 
 import java.util.HashMap;
 import java.util.Map;

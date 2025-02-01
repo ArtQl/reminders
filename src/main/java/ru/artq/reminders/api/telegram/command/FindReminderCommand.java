@@ -1,10 +1,11 @@
-package ru.artq.reminders.api.telegram;
+package ru.artq.reminders.api.telegram.command;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.artq.reminders.api.dto.ReminderDto;
 import ru.artq.reminders.api.service.ReminderService;
+import ru.artq.reminders.api.telegram.TelegramBot;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class FindReminderCommand implements Command {
 
     @Override
     public void execute(Update update) {
-        if (!telegramBot.checkUserLogin(update)) return;
+        if (telegramBot.checkUserNotLogin(update)) return;
         long chatId = update.getMessage().getChatId();
         StringBuilder sb = new StringBuilder("Список ваших напоминаний:\n");
         try {

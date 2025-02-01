@@ -2,10 +2,9 @@ databaseChangeLog:
   - changeSet:
       id: 003
       author: Artem_Kazakov
-      comment: add field telegramChatId in reminder
       changes:
         - addColumn:
-            tableName: reminders
+            tableName: users
             columns:
               - column:
                   name: telegram_chat_id
