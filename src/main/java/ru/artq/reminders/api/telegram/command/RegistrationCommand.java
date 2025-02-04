@@ -20,21 +20,22 @@ public class RegistrationCommand implements Command {
     @Override
     public void execute(Update update) {
         long chatId = update.getMessage().getChatId();
+        String text = update.getMessage().getText();
         UserSession session = userSessionService.getUserSession(chatId);
 
         if (telegramBot.checkUserLogin(update)) return;
-        String text = update.getMessage().getText();
 
         if (session.getState() == UserStateType.START) {
             telegramBot.sendMessage(chatId, "Введите ваш email:");
             session.setState(UserStateType.REGISTRATION);
             session.setCommand("/registration");
         } else if (session.getState() == UserStateType.REGISTRATION) {
-            registration(session, text, chatId, update.getMessage().getFrom().getUserName());
+            handleRegistration(session, text, chatId, update.getMessage().getFrom().getUserName());
         }
     }
 
-    private void registration(UserSession session, String text, long chatId, String username) {
+    private void handleRegistration(UserSession session, String text,
+                                    long chatId, String username) {
         if (session.getEmail() == null) {
             session.setEmail(text);
             telegramBot.sendMessage(chatId, "Введите ваш пароль:");

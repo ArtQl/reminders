@@ -20,8 +20,13 @@ public class ScheduledReminder {
     @Scheduled(fixedRate = 60000)
     public void checkReminders() {
         List<Long> usersId = userSessionService.getUserSessions()
-                .values().stream().map(UserSession::getUserId).toList();
+                .values()
+                .stream()
+                .map(UserSession::getUserId)
+                .toList();
+
         if (usersId.isEmpty()) return;
+
         reminderService
                 .findByRemindTimeBefore(LocalDateTime.now())
                 .stream().filter(rem -> usersId.contains(rem.getUserId()))

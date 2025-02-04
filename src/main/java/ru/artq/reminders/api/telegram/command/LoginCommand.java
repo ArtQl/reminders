@@ -24,6 +24,7 @@ public class LoginCommand implements Command {
         UserSession session = userSessionService.getUserSession(chatId);
 
         if (telegramBot.checkUserLogin(update)) return;
+
         if (!userService.existsByUsername(update.getMessage().getFrom().getUserName())) {
             telegramBot.sendMessage(chatId, "Вы не зарегистрированы в системе!");
             return;
@@ -34,21 +35,26 @@ public class LoginCommand implements Command {
             session.setState(UserStateType.LOGIN);
             session.setCommand("/login");
         } else if (session.getState() == UserStateType.LOGIN) {
-            if (session.getEmail() == null) {
-                session.setEmail(text);
-                telegramBot.sendMessage(chatId, "Введите ваш пароль:");
-            } else if (session.getPassword() == null) {
-                try {
-                    session.setPassword(text);
-                    UserDto user = userService.findUserByEmailAndPassword(
-                            session.getEmail(), session.getPassword());
-                    session.setUserId(user.getId());
-                    telegramBot.sendMessage(chatId, "Вы успешно вошли в систему!");
-                    session.setState(UserStateType.LOGGED);
-                } catch (RuntimeException e) {
-                    telegramBot.sendMessage(chatId, e.getMessage());
-                    userSessionService.clearSession(chatId);
-                }
+            loginHandle(session, text, chatId);
+        }
+    }
+
+    private void loginHandle(UserSession session,
+                             String text, long chatId) {
+        if (session.getEmail() == null) {
+            session.setEmail(text);
+            telegramBot.sendMessage(chatId, "Введите ваш пароль:");
+        } else if (session.getPassword() == null) {
+            session.setPassword(text);
+            try {
+                UserDto user = userService.findUserByEmailAndPassword(
+                        session.getEmail(), session.getPassword());
+                session.setUserId(user.getId());
+                telegramBot.sendMessage(chatId, "Вы успешно вошли в систему!");
+                session.setState(UserStateType.LOGGED);
+            } catch (RuntimeException e) {
+                telegramBot.sendMessage(chatId, e.getMessage());
+                userSessionService.clearSession(chatId);
             }
         }
     }

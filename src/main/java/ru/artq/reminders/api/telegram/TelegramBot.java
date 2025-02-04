@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
@@ -20,6 +21,8 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 @Component
 @RequiredArgsConstructor
 public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
+    @Value("${telegram.bot.token}")
+    private String botToken;
     private final TelegramClient telegramClient = new OkHttpTelegramClient(getBotToken());
     private final CommandFactory commandFactory;
     private final UserSessionService userSessionService;
@@ -50,7 +53,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
 
     @Override
     public String getBotToken() {
-        return "7783739105:AAEqK4xTNb1aIv7BjeGLNtnCZ7mcZUJE9LM";
+        return botToken;
     }
 
     @Override
@@ -59,9 +62,12 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     }
 
     public void sendMessage(Long chat_id, String text) {
+        SendMessage message = SendMessage.builder()
+                .chatId(chat_id)
+                .text(text)
+                .build();
         try {
-            telegramClient.execute(SendMessage.builder()
-                    .chatId(chat_id).text(text).build());
+            telegramClient.execute(message);
         } catch (TelegramApiException e) {
             log.warn("Telegram error: {} ", e.getMessage());
         }
