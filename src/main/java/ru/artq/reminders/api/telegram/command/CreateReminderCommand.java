@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.artq.reminders.api.service.ReminderService;
+import ru.artq.reminders.api.service.UserService;
 import ru.artq.reminders.api.telegram.TelegramBot;
 import ru.artq.reminders.api.telegram.UserSession;
 import ru.artq.reminders.api.telegram.UserSessionService;
@@ -24,7 +25,7 @@ public class CreateReminderCommand implements Command {
 
         long chatId = update.getMessage().getChatId();
         UserSession session = userSessionService.getUserSession(chatId);
-        String messageText = update.getMessage().getText();
+        String text = update.getMessage().getText();
 
         switch (session.getState()) {
             case START:
@@ -33,19 +34,19 @@ public class CreateReminderCommand implements Command {
                 break;
             case CREATE_REMINDER:
                 if (session.getTitle() == null) {
-                    session.setTitle(messageText);
+                    session.setTitle(text);
                     telegramBot.sendMessage(chatId, "Введите описание напоминания:");
                 } else if (session.getDescription() == null) {
-                    session.setDescription(messageText);
+                    session.setDescription(text);
                     telegramBot.sendMessage(chatId, "Введите приоритет напоминания:");
                 } else if (session.getPriority() == null) {
-                    session.setPriority(messageText);
+                    session.setPriority(text);
                     telegramBot.sendMessage(chatId, "Введите дату и время напоминания (в формате yyyy-MM-ddTHH:mm):");
                 } else {
                     try {
-                        session.setDateTime(LocalDateTime.parse(messageText));
+                        session.setDateTime(LocalDateTime.parse(text));
                         reminderService.createReminder(
-                                telegramBot.getUser().getId(),
+                                session.getUserId(),
                                 session.getTitle(),
                                 session.getDescription(),
                                 session.getPriority(),

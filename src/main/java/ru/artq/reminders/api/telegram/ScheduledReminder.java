@@ -3,7 +3,6 @@ package ru.artq.reminders.api.telegram;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ru.artq.reminders.api.dto.ReminderDto;
 import ru.artq.reminders.api.service.ReminderService;
 import ru.artq.reminders.api.service.UserService;
 
@@ -16,14 +15,20 @@ public class ScheduledReminder {
     private final TelegramBot telegramBot;
     private final ReminderService reminderService;
     private final UserService userService;
+    private final UserSessionService userSessionService;
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 60000)
     public void checkReminders() {
-        if (telegramBot.getUser() == null) return;
-        List<ReminderDto> list = reminderService.findByRemindTimeBefore(LocalDateTime.now());
-        list.forEach(rem -> {
-            Long chatId = userService.findTelegramChatId(rem.getUserId());
-            telegramBot.sendMessage(chatId, "Напоминание: " + rem.getTitle() + ", Описание:" +rem.getDescription());
+        List<Long> usersId = userSessionService.getUserSessions()
+                .values().stream().map(UserSession::getUserId).toList();
+        if (usersId.isEmpty()) return;
+        reminderService
+                .findByRemindTimeBefore(LocalDateTime.now())
+                .stream().filter(rem -> usersId.contains(rem.getUserId()))
+                .forEach(rem -> {
+                    String str = "Напоминание: " + rem.getTitle() + ", Описание: " + rem.getDescription();
+                    long chatId = userService.findTelegramChatId(rem.getUserId());
+                    telegramBot.sendMessage(chatId, str);
         });
     }
 }

@@ -42,15 +42,14 @@ public class RegistrationCommand implements Command {
             session.setPassword(text);
         } else {
             try {
-                UserDto userDto = userService.createUser(chatId, username, session.getEmail(), session.getPassword());
-                telegramBot.setUser(userDto);
+                UserDto user = userService.createUser(chatId, username, session.getEmail(), session.getPassword());
+                session.setUserId(user.getId());
                 telegramBot.sendMessage(chatId, "Вы успешно вошли в систему!");
-                userSessionService.clearSession(chatId);
+                session.setState(UserStateType.LOGGED);
             } catch (RuntimeException e) {
                 telegramBot.sendMessage(chatId, e.getMessage());
-                session.setPriority(null);
+                userSessionService.clearSession(chatId);
             }
         }
     }
-
 }

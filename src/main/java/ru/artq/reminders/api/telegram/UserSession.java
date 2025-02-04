@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class UserSession {
     private UserStateType state = UserStateType.START;
     private String command = "/new";
+    private Long userId;
     private String email;
     private String password;
     private String title;

@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.artq.reminders.api.dto.ReminderDto;
 import ru.artq.reminders.api.service.ReminderService;
 import ru.artq.reminders.api.telegram.TelegramBot;
+import ru.artq.reminders.api.telegram.UserSessionService;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
 public class FindReminderCommand implements Command {
     private final ReminderService reminderService;
     private final TelegramBot telegramBot;
+    private final UserSessionService userSessionService;
 
     @Override
     public void execute(Update update) {
@@ -21,7 +23,7 @@ public class FindReminderCommand implements Command {
         long chatId = update.getMessage().getChatId();
         StringBuilder sb = new StringBuilder("Список ваших напоминаний:\n");
         try {
-            List<ReminderDto> list= reminderService.findReminder(telegramBot.getUser().getId());
+            List<ReminderDto> list = reminderService.findReminder(userSessionService.getUserSession(chatId).getUserId());
             list.forEach(rem -> {
                 sb.append(rem);
                 sb.append("\n");

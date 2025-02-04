@@ -2,7 +2,7 @@ package ru.artq.reminders.api.telegram;
 
 public class MessagesTelegram {
     public final static String START_MESSAGE = """
-            🤖🚀🦾 Привет! 🤖🚀🦾
+            🤖🚀 Привет! 🤖🚀
             \nЯ чат-бот который напомнит тебе все то, что ты забыл!!!
             \nИспользуй следующие команды:
             \n/registration - регистрация

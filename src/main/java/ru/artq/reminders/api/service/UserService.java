@@ -30,7 +30,13 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Boolean findUserByUsername(String username) {
+    public UserDto findUserByUsername(String username) {
+        return ConverterDto.userEntityToDto(userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User with username '%s' not found.".formatted(username))));
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
 

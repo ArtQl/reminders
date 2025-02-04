@@ -13,7 +13,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
-import ru.artq.reminders.api.dto.UserDto;
 
 @Slf4j
 @Getter
@@ -24,7 +23,6 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     private final TelegramClient telegramClient = new OkHttpTelegramClient(getBotToken());
     private final CommandFactory commandFactory;
     private final UserSessionService userSessionService;
-    private UserDto user;
 
     @Override
     public void consume(Update update) {
@@ -33,13 +31,15 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
             UserSession session = userSessionService.getUserSession(chatId);
             String command = update.getMessage().getText().split(" ")[0];
 
-            if (session.getState() == UserStateType.START) {
+            if (session.getState() == UserStateType.START ||
+                    session.getState() == UserStateType.LOGGED) {
                 commandFactory.getCommand(command)
                         .ifPresentOrElse(
                                 cmd -> cmd.execute(update),
                                 () -> sendMessage(update.getMessage().getChatId(),
-                                        user != null ? MessagesTelegram.LOGIN_MESSAGE :
-                                                MessagesTelegram.START_MESSAGE)
+                                        session.getState() == UserStateType.LOGGED
+                                                ? MessagesTelegram.LOGIN_MESSAGE
+                                                : MessagesTelegram.START_MESSAGE)
                         );
             } else {
                 commandFactory.getCommand(userSessionService.getUserSession(chatId).getCommand())
@@ -68,14 +68,14 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     }
 
     public Boolean checkUserLogin(Update update) {
-        if (user != null) {
+        if (userSessionService.getUserSession(update.getMessage().getChatId()).getState() == UserStateType.LOGGED) {
             sendMessage(update.getMessage().getChatId(), MessagesTelegram.LOGIN_MESSAGE);
             return true;
         }
         return false;
     }
     public Boolean checkUserNotLogin(Update update) {
-        if (user == null) {
+        if (userSessionService.getUserSession(update.getMessage().getChatId()).getState() != UserStateType.LOGGED) {
             sendMessage(update.getMessage().getChatId(), MessagesTelegram.NO_LOGIN_MESSAGE);
             return true;
         }
