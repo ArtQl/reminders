@@ -14,3 +14,7 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+telegram:
+  bot:
+    token: 7783739105:AAEqK4xTNb1aIv7BjeGLNtnCZ7mcZUJE9LM

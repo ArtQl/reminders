@@ -21,6 +21,7 @@ public class ConverterDto {
     public static UserDto userEntityToDto(UserEntity entity) {
         return UserDto.builder()
                 .id(entity.getId())
+                .telegramChatId(entity.getTelegramChatId())
                 .username(entity.getUsername())
                 .email(entity.getEmail())
                 .createdAt(entity.getCreatedAt())

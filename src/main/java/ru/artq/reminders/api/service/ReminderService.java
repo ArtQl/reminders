@@ -56,6 +56,12 @@ public class ReminderService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<ReminderDto> findByRemindTimeBefore(LocalDateTime dateTime) {
+        return reminderRepository.findByRemindBefore(dateTime)
+                .stream().map(ConverterDto::reminderEntityToDto).toList();
+    }
+
     @Transactional
     public ReminderDto createReminder(Long userId, String title,
                                       String description, String priority,
@@ -96,5 +102,13 @@ public class ReminderService {
         ReminderEntity reminder = serviceHelper
                 .findReminderById(userId, reminderId);
         reminderRepository.delete(reminder);
+    }
+
+    public List<ReminderDto> findReminder(Long userId) {
+        List<ReminderEntity> reminders = reminderRepository.findByUserId(userId);
+        if (reminders.isEmpty()) {
+            throw new NotFoundException("User reminder %d not found".formatted(userId));
+        }
+        return reminders.stream().map(ConverterDto::reminderEntityToDto).toList();
     }
 }
