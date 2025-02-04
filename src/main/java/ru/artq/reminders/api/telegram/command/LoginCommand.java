@@ -20,10 +20,10 @@ public class LoginCommand implements Command {
     @Override
     public void execute(Update update) {
         long chatId = update.getMessage().getChatId();
-        String text = update.getMessage().getText();
+        String text = update.getMessage().getText().trim();
         UserSession session = userSessionService.getUserSession(chatId);
 
-        if (telegramBot.checkUserLogin(update)) return;
+        if (telegramBot.checkUserLogin(chatId)) return;
 
         if (!userService.existsByUsername(update.getMessage().getFrom().getUserName())) {
             telegramBot.sendMessage(chatId, "Вы не зарегистрированы в системе!");

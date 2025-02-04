@@ -27,9 +27,9 @@ public class ScheduledReminder {
 
         if (usersId.isEmpty()) return;
 
-        reminderService
-                .findByRemindTimeBefore(LocalDateTime.now())
-                .stream().filter(rem -> usersId.contains(rem.getUserId()))
+        reminderService.findByRemindTimeBefore(LocalDateTime.now())
+                .stream()
+                .filter(rem -> usersId.contains(rem.getUserId()))
                 .forEach(rem -> {
                     String str = "Напоминание: " + rem.getTitle() + ", Описание: " + rem.getDescription();
                     long chatId = userService.findTelegramChatId(rem.getUserId());

@@ -20,18 +20,18 @@ public class CreateReminderCommand implements Command {
 
     @Override
     public void execute(Update update) {
-        if (telegramBot.checkUserNotLogin(update)) return;
-
         long chatId = update.getMessage().getChatId();
-        UserSession session = userSessionService.getUserSession(chatId);
-        String text = update.getMessage().getText();
 
-        switch (session.getState()) {
-            case START -> {
-                telegramBot.sendMessage(chatId, "Введите заголовок напоминания:");
-                session.setState(UserStateType.CREATE_REMINDER);
-            }
-            case CREATE_REMINDER -> handleCreateReminder(session, text, chatId);
+        if (telegramBot.checkUserNotLogin(chatId)) return;
+
+        UserSession session = userSessionService.getUserSession(chatId);
+        String text = update.getMessage().getText().trim();
+
+        if (session.getState() == UserStateType.START) {
+            telegramBot.sendMessage(chatId, "Введите заголовок напоминания:");
+            session.setState(UserStateType.CREATE_REMINDER);
+        } else if (session.getState() == UserStateType.CREATE_REMINDER) {
+            handleCreateReminder(session, text, chatId);
         }
     }
 

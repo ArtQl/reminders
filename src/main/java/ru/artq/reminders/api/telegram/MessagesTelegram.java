@@ -13,7 +13,7 @@ public class MessagesTelegram {
             \n/remove - удалить напоминание.
             """;
 
-    public final static String NO_LOGIN_MESSAGE = "Ты еще не вошел в системе!\nДля входа в систему используй: /login [email] [password]";
+    public final static String NO_LOGIN_MESSAGE = "Ты еще не вошел в системе!\nДля входа в систему используй: /login";
 
     public final static String LOGIN_MESSAGE = """
             Вы уже успешно вошли в системе!

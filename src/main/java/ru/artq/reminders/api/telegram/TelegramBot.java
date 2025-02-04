@@ -1,5 +1,6 @@
 package ru.artq.reminders.api.telegram;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -23,9 +24,16 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
     @Value("${telegram.bot.token}")
     private String botToken;
-    private final TelegramClient telegramClient = new OkHttpTelegramClient(getBotToken());
+
+    private TelegramClient telegramClient;
+
     private final CommandFactory commandFactory;
     private final UserSessionService userSessionService;
+
+    @PostConstruct
+    public void init() {
+        telegramClient = new OkHttpTelegramClient(botToken);
+    }
 
     @Override
     public void consume(Update update) {
@@ -39,7 +47,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                 commandFactory.getCommand(command)
                         .ifPresentOrElse(
                                 cmd -> cmd.execute(update),
-                                () -> sendMessage(update.getMessage().getChatId(),
+                                () -> sendMessage(chatId,
                                         session.getState() == UserStateType.LOGGED
                                                 ? MessagesTelegram.LOGIN_MESSAGE
                                                 : MessagesTelegram.START_MESSAGE)
@@ -73,16 +81,16 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
         }
     }
 
-    public Boolean checkUserLogin(Update update) {
-        if (userSessionService.getUserSession(update.getMessage().getChatId()).getState() == UserStateType.LOGGED) {
-            sendMessage(update.getMessage().getChatId(), MessagesTelegram.LOGIN_MESSAGE);
+    public Boolean checkUserLogin(long chatId) {
+        if (userSessionService.getUserSession(chatId).getState() == UserStateType.LOGGED) {
+            sendMessage(chatId, MessagesTelegram.LOGIN_MESSAGE);
             return true;
         }
         return false;
     }
-    public Boolean checkUserNotLogin(Update update) {
-        if (userSessionService.getUserSession(update.getMessage().getChatId()).getState() != UserStateType.LOGGED) {
-            sendMessage(update.getMessage().getChatId(), MessagesTelegram.NO_LOGIN_MESSAGE);
+    public Boolean checkUserNotLogin(long chatId) {
+        if (userSessionService.getUserSession(chatId).getState() != UserStateType.LOGGED) {
+            sendMessage(chatId, MessagesTelegram.NO_LOGIN_MESSAGE);
             return true;
         }
         return false;

@@ -19,13 +19,18 @@ public class FindReminderCommand implements Command {
 
     @Override
     public void execute(Update update) {
-        if (telegramBot.checkUserNotLogin(update)) return;
-
         long chatId = update.getMessage().getChatId();
+
+        if (telegramBot.checkUserNotLogin(chatId)) return;
+
         StringBuilder sb = new StringBuilder("Список ваших напоминаний:\n");
         try {
             List<ReminderDto> reminders = reminderService.findReminder(userSessionService.getUserSession(chatId).getUserId());
-            reminders.forEach(rem -> sb.append(rem).append("\n"));
+            if (reminders.isEmpty()) {
+                sb.append("Напоминаний не найдено.");
+            } else {
+                reminders.forEach(rem -> sb.append(rem).append("\n"));
+            }
             telegramBot.sendMessage(chatId, sb.toString());
         } catch (Exception e) {
             telegramBot.sendMessage(chatId, e.getMessage());
