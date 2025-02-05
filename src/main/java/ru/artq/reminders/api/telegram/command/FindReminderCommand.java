@@ -8,6 +8,7 @@ import ru.artq.reminders.api.service.ReminderService;
 import ru.artq.reminders.api.telegram.TelegramBot;
 import ru.artq.reminders.api.telegram.UserSessionService;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
@@ -24,12 +25,24 @@ public class FindReminderCommand implements Command {
         if (telegramBot.isUserNotLogged(chatId)) return;
 
         StringBuilder sb = new StringBuilder("Список ваших напоминаний:\n");
+
         try {
-            List<ReminderDto> reminders = reminderService.findReminder(userSessionService.getUserSession(chatId).getUserId());
+            List<ReminderDto> reminders = reminderService
+                    .findReminder(userSessionService.getUserSession(chatId).getUserId());
             if (reminders.isEmpty()) {
                 sb.append("Напоминаний не найдено.");
             } else {
-                reminders.forEach(rem -> sb.append(rem).append("\n"));
+                reminders.forEach(reminder -> {
+
+                    String message = String.format(
+                            "⏰ Напоминание: %s\n📝 Описание: %s\n⏳ Время: %s\n\uD83D\uDD25 Приоритет: %s",
+                            reminder.getTitle(),
+                            reminder.getDescription(),
+                            reminder.getRemind().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
+                            reminder.getPriority()
+                    );
+                    sb.append(message).append("\n\n");
+                });
             }
             telegramBot.sendMessage(chatId, sb.toString());
         } catch (Exception e) {
