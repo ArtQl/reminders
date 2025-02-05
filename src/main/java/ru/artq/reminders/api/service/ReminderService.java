@@ -33,8 +33,8 @@ public class ReminderService {
 
     @Transactional(readOnly = true)
     public List<ReminderDto> findReminder(Long userId, String title,
-                                    LocalDate date, LocalTime time,
-                                    String order, Integer limit, Integer offset) {
+                                          LocalDate date, LocalTime time,
+                                          String order, Integer limit, Integer offset) {
         List<ReminderEntity> reminders = reminderRepository.findByUserId(userId);
         if (reminders.isEmpty()) {
             throw new NotFoundException("User reminder %d not found".formatted(userId));
@@ -43,7 +43,7 @@ public class ReminderService {
                 .filter(r -> title == null || title.isBlank() ||
                         r.getTitle().toLowerCase().contains(title.toLowerCase()))
                 .filter(r -> date == null || r.getRemind().toLocalDate().isEqual(date))
-                .filter(r -> time == null ||  r.getRemind().toLocalTime().equals(time))
+                .filter(r -> time == null || r.getRemind().toLocalTime().equals(time))
                 .sorted((r1, r2) -> {
                     if (order.equals("desc") || order.isBlank()) {
                         return r2.getId().compareTo(r1.getId());

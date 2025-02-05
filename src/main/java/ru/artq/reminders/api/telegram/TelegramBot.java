@@ -25,12 +25,11 @@ import ru.artq.reminders.api.telegram.session.UserSessionService;
 @Component
 @RequiredArgsConstructor
 public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
+    private final CommandFactory commandFactory;
+    private final UserSessionService userSessionService;
     @Value("${telegram.bot.token}")
     private String botToken;
     private TelegramClient telegramClient;
-
-    private final CommandFactory commandFactory;
-    private final UserSessionService userSessionService;
 
     @PostConstruct
     public void init() {

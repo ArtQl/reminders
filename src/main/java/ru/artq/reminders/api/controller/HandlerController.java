@@ -46,7 +46,7 @@ public class HandlerController {
     private ResponseEntity<ErrorDto> buildResponseEntity(HttpStatus httpStatus, String message) {
         return ResponseEntity.status(httpStatus)
                 .body(ErrorDto.builder()
-                .httpStatus(httpStatus.getReasonPhrase())
-                .description(message).build());
+                        .httpStatus(httpStatus.getReasonPhrase())
+                        .description(message).build());
     }
 }
