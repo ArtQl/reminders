@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
-public class CreateReminderCommand implements Command {
+public class CreateCommand implements Command {
     private final ReminderService reminderService;
     private final TelegramBot telegramBot;
     private final UserSessionService userSessionService;
