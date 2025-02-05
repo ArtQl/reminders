@@ -66,7 +66,14 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                 case REGISTRATION, LOGIN, CREATE_REMINDER ->
                     executeCommand(session.getCommand(), update, chatId, "Неизвестная команда!");
             }
-            deleteMessage(chatId, update.getMessage().getMessageId());
+            new Thread(() -> {
+                try {
+                    Thread.sleep(500);
+                    deleteMessage(chatId, update.getMessage().getMessageId());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
         } else if (update.hasCallbackQuery()) {
             long chatId = update.getCallbackQuery().getMessage().getChatId();
             UserSession session = userSessionService.getUserSession(chatId);
@@ -143,32 +150,55 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     }
 
     public void sendMessageWithKeyboard(Long chatId, String text) {
-        SendMessage message = SendMessage
-                .builder()
-                .chatId(chatId)
-                .text(text)
-                .replyMarkup(InlineKeyboardMarkup.builder()
-                        .keyboardRow(new InlineKeyboardRow(
-                                        InlineKeyboardButton
-                                                .builder()
-                                                .text("Low")
-                                                .callbackData("low")
-                                                .build(),
-                                        InlineKeyboardButton
-                                                .builder()
-                                                .text("Medium")
-                                                .callbackData("medium")
-                                                .build(),
-                                        InlineKeyboardButton
-                                                .builder()
-                                                .text("High")
-                                                .callbackData("high")
-                                                .build()
-                                )
-                        ).build())
-                .build();
+//        SendMessage message = SendMessage
+//                .builder()
+//                .chatId(chatId)
+//                .text(text)
+//                .replyMarkup(InlineKeyboardMarkup.builder()
+//                        .keyboardRow(new InlineKeyboardRow(
+//                                        InlineKeyboardButton
+//                                                .builder()
+//                                                .text("Low")
+//                                                .callbackData("low")
+//                                                .build(),
+//                                        InlineKeyboardButton
+//                                                .builder()
+//                                                .text("Medium")
+//                                                .callbackData("medium")
+//                                                .build(),
+//                                        InlineKeyboardButton
+//                                                .builder()
+//                                                .text("High")
+//                                                .callbackData("high")
+//                                                .build()
+//                                )
+//                        ).build())
+//                .build();
         try {
-            telegramClient.execute(message);
+            telegramClient.execute(EditMessageText.builder()
+                    .chatId(chatId)
+                    .messageId(userSessionService.getUserSession(chatId).getMessage().getMessageId())
+                    .text(text)
+                    .replyMarkup(InlineKeyboardMarkup.builder()
+                            .keyboardRow(new InlineKeyboardRow(
+                                            InlineKeyboardButton
+                                                    .builder()
+                                                    .text("Low")
+                                                    .callbackData("low")
+                                                    .build(),
+                                            InlineKeyboardButton
+                                                    .builder()
+                                                    .text("Medium")
+                                                    .callbackData("medium")
+                                                    .build(),
+                                            InlineKeyboardButton
+                                                    .builder()
+                                                    .text("High")
+                                                    .callbackData("high")
+                                                    .build()
+                                    )
+                            ).build())
+                    .build());
         } catch (TelegramApiException e) {
             log.error("Failed to send message keyboard to chat {}: {}", chatId, e.getMessage());
         }
