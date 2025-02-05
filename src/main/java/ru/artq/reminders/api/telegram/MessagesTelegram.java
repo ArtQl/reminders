@@ -7,10 +7,6 @@ public class MessagesTelegram {
             \nИспользуй следующие команды:
             \n/registration - регистрация
             \n/login - войти.
-            \n/new - создать напоминание.
-            \n/find - получить все напоминания.
-            \n/update - обновить напоминание.
-            \n/remove - удалить напоминание.
             """;
 
     public final static String NO_LOGIN_MESSAGE = """
@@ -20,7 +16,7 @@ public class MessagesTelegram {
             """;
 
     public final static String LOGIN_MESSAGE = """
-            Вы уже успешно вошли в системе!
+            Ты уже успешно вошел в системе!
             \nИспользуй следующие команды:
             \n/find - найти напоминание.
             \n/new - создать напоминание.
