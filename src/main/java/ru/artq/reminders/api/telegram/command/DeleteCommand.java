@@ -14,7 +14,6 @@ public class DeleteCommand implements Command {
     public void execute(Update update) {
         long chatId = update.getMessage().getChatId();
 
-        if (telegramBot.isUserNotLogged(chatId)) return;
         // todo: do delete command
         telegramBot.sendMessage(chatId, "Операция удаления временно не доступна!");
     }

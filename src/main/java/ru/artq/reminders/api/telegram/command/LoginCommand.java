@@ -5,10 +5,11 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.artq.reminders.api.dto.UserDto;
 import ru.artq.reminders.api.service.UserService;
+import ru.artq.reminders.api.telegram.MessagesTelegram;
 import ru.artq.reminders.api.telegram.TelegramBot;
-import ru.artq.reminders.api.telegram.UserSession;
-import ru.artq.reminders.api.telegram.UserSessionService;
-import ru.artq.reminders.api.telegram.UserStateType;
+import ru.artq.reminders.api.telegram.session.UserSession;
+import ru.artq.reminders.api.telegram.session.UserSessionService;
+import ru.artq.reminders.api.telegram.session.UserStateType;
 
 @Component
 @RequiredArgsConstructor
@@ -22,8 +23,6 @@ public class LoginCommand implements Command {
         long chatId = update.getMessage().getChatId();
         String text = update.getMessage().getText().trim();
         UserSession session = userSessionService.getUserSession(chatId);
-
-        if (telegramBot.isUserLogged(chatId)) return;
 
         if (!userService.existsByUsername(update.getMessage().getFrom().getUserName())) {
             telegramBot.sendMessage(chatId, "Вы не зарегистрированы в системе!");
@@ -50,7 +49,7 @@ public class LoginCommand implements Command {
                 UserDto user = userService.findUserByEmailAndPassword(
                         session.getEmail(), session.getPassword());
                 session.setUserId(user.getId());
-                telegramBot.sendMessage(chatId, "Вы успешно вошли в систему!");
+                telegramBot.sendMessage(chatId, MessagesTelegram.LOGIN_MESSAGE);
                 session.setState(UserStateType.LOGGED);
             } catch (RuntimeException e) {
                 telegramBot.sendMessage(chatId, e.getMessage());

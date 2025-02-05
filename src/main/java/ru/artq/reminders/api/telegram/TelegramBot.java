@@ -15,6 +15,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+import ru.artq.reminders.api.telegram.command.CommandFactory;
+import ru.artq.reminders.api.telegram.session.UserSession;
+import ru.artq.reminders.api.telegram.session.UserSessionService;
 
 @Slf4j
 @Getter
@@ -35,30 +38,6 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     }
 
     @Override
-    public void consume(Update update) {
-        if (!update.hasMessage() && !update.getMessage().hasText()) return;
-
-        long chatId = update.getMessage().getChatId();
-        UserSession session = userSessionService.getUserSession(chatId);
-        String command = update.getMessage().getText().trim().split(" ")[0];
-
-        if (session.getState() == UserStateType.START ||
-                session.getState() == UserStateType.LOGGED) {
-            commandFactory.getCommand(command)
-                    .ifPresentOrElse(
-                            cmd -> cmd.execute(update),
-                            () -> sendMessage(chatId,
-                                    session.getState() == UserStateType.LOGGED
-                                            ? MessagesTelegram.LOGIN_MESSAGE
-                                            : MessagesTelegram.START_MESSAGE)
-                    );
-        } else {
-            commandFactory.getCommand(userSessionService.getUserSession(chatId).getCommand())
-                    .ifPresent(cmd -> cmd.execute(update));
-        }
-    }
-
-    @Override
     public String getBotToken() {
         return botToken;
     }
@@ -68,30 +47,63 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
         return this;
     }
 
-    public void sendMessage(Long chat_id, String text) {
+    @Override
+    public void consume(Update update) {
+        if (!update.hasMessage() && !update.getMessage().hasText()) return;
+
+        long chatId = update.getMessage().getChatId();
+        UserSession session = userSessionService.getUserSession(chatId);
+        String commandKey = update.getMessage().getText().trim().toLowerCase().split(" ")[0];
+
+        switch (session.getState()) {
+            case START -> handleStartState(update, commandKey, chatId);
+            case LOGGED -> handleLoggedState(update, commandKey, chatId);
+            case REGISTRATION, LOGIN, CREATE_REMINDER ->
+                    executeCommand(session.getCommand(), update, chatId, "Неизвестная команда!");
+        }
+    }
+
+    private void handleStartState(Update update, String commandKey, long chatId) {
+        if (commandKey.equals("/registration") || commandKey.equals("/login")) {
+            executeCommand(commandKey, update, chatId, MessagesTelegram.START_MESSAGE);
+        } else {
+            sendMessage(chatId, MessagesTelegram.START_MESSAGE);
+        }
+    }
+
+    private void handleLoggedState(Update update, String commandKey, long chatId) {
+        if (!commandKey.equals("/registration") && !commandKey.equals("/login")) {
+            executeCommand(commandKey, update, chatId, MessagesTelegram.LOGIN_MESSAGE);
+        } else {
+            sendMessage(chatId, MessagesTelegram.LOGIN_MESSAGE);
+        }
+    }
+
+    private void executeCommand(String command, Update update,
+                                long chatId, String message) {
+        commandFactory.getCommand(command)
+                .ifPresentOrElse(
+                        cmd -> {
+                            log.info("Executing command: {}", command);
+                            cmd.execute(update);
+                        },
+                        () -> {
+                            log.warn("Unknown command: {}", command);
+                            sendMessage(chatId, message);
+                        }
+                );
+    }
+
+    public void sendMessage(Long chatId, String text) {
         SendMessage message = SendMessage.builder()
-                .chatId(chat_id)
+                .chatId(chatId)
                 .text(text)
                 .build();
         try {
             telegramClient.execute(message);
         } catch (TelegramApiException e) {
-            log.warn("Telegram error: {} ", e.getMessage());
-        }
-    }
+            log.error("Failed to send message to chat {}: {}", chatId, e.getMessage());
 
-    public Boolean isUserLogged(long chatId) {
-        if (userSessionService.getUserSession(chatId).getState() == UserStateType.LOGGED) {
-            sendMessage(chatId, MessagesTelegram.LOGIN_MESSAGE);
-            return true;
         }
-        return false;
-    }
-    public Boolean isUserNotLogged(long chatId) {
-        if (userSessionService.getUserSession(chatId).getState() != UserStateType.LOGGED) {
-            sendMessage(chatId, MessagesTelegram.NO_LOGIN_MESSAGE);
-            return true;
-        }
-        return false;
     }
 }
