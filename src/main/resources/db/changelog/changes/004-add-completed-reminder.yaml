@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004
+      author: Artem_Kazakov
+      changes:
+        - addColumn:
+            tableName: reminders
+            columns:
+              - column:
+                  name: completed
+                  type: boolean

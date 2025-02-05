@@ -1,0 +1,74 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001
+      author: Artem_Kazakov
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: current_timestamp
+        - createTable:
+            tableName: reminders
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: remind
+                  type: timestamp
+              - column:
+                  name: description
+                  type: text
+                  defaultValue: ''
+              - column:
+                  name: priority
+                  type: varchar(10)
+                  defaultValue: 'NONE'
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: current_timestamp
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: reminders
+            baseColumnNames: user_id
+            constraintName: fk_reminder_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: cascade
