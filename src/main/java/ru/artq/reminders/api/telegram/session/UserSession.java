@@ -1,4 +1,4 @@
-package ru.artq.reminders.api.telegram;
+package ru.artq.reminders.api.telegram.session;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 public class UserSession {
     private UserStateType state = UserStateType.START;
-    private String command = "/new";
+    private String command = "/start";
     private Long userId;
     private String email;
     private String password;
@@ -17,4 +17,13 @@ public class UserSession {
     private String description;
     private String priority;
     private LocalDateTime dateTime;
+
+    public void clear() {
+        email = null;
+        password = null;
+        title = null;
+        description = null;
+        priority = null;
+        dateTime = null;
+    }
 }

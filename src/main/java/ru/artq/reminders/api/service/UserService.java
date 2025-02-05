@@ -42,7 +42,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Long findTelegramChatId(Long userId) {
-        UserEntity entity =  userRepository.findById(userId)
+        UserEntity entity = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id '%s' not found.".formatted(userId)));
         return entity.getTelegramChatId();
     }

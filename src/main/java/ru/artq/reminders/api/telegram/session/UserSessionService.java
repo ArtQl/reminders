@@ -1,4 +1,4 @@
-package ru.artq.reminders.api.telegram;
+package ru.artq.reminders.api.telegram.session;
 
 import lombok.Getter;
 import org.springframework.stereotype.Service;

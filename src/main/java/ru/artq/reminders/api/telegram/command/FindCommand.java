@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.artq.reminders.api.dto.ReminderDto;
 import ru.artq.reminders.api.service.ReminderService;
 import ru.artq.reminders.api.telegram.TelegramBot;
-import ru.artq.reminders.api.telegram.UserSessionService;
+import ru.artq.reminders.api.telegram.session.UserSessionService;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -21,9 +21,6 @@ public class FindCommand implements Command {
     @Override
     public void execute(Update update) {
         long chatId = update.getMessage().getChatId();
-
-        if (telegramBot.isUserNotLogged(chatId)) return;
-
         StringBuilder sb = new StringBuilder("Список ваших напоминаний:\n");
 
         try {
@@ -33,7 +30,6 @@ public class FindCommand implements Command {
                 sb.append("Напоминаний не найдено.");
             } else {
                 reminders.forEach(reminder -> {
-
                     String message = String.format(
                             "⏰ Напоминание: %s\n📝 Описание: %s\n⏳ Время: %s\n\uD83D\uDD25 Приоритет: %s \n\uD83C\uDFC1 Выполнено: %s",
                             reminder.getTitle(),
@@ -47,7 +43,7 @@ public class FindCommand implements Command {
             }
             telegramBot.sendMessage(chatId, sb.toString());
         } catch (Exception e) {
-            telegramBot.sendMessage(chatId, e.getMessage());
+            telegramBot.sendMessage(chatId, "Ошибка получения напоминаний: %s".formatted(e));
         }
     }
 }

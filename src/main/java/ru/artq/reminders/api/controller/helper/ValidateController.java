@@ -27,12 +27,14 @@ public class ValidateController {
             throw new BadRequestException("Username: '%s' is not correct.".formatted(username));
         }
     }
+
     public static void checkPassword(String password) {
         if (password == null || password.trim().isEmpty()) {
             log.info("Password: {} is not correct.", password);
             throw new BadRequestException("Password: '%s' is not correct.".formatted(password));
         }
     }
+
     public static void checkEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
             log.info("Email: {} is not correct.", email);

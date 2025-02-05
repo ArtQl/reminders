@@ -1,9 +1,8 @@
-package ru.artq.reminders.api.telegram;
+package ru.artq.reminders.api.telegram.command;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.artq.reminders.api.telegram.command.*;
 
 @Component
 @RequiredArgsConstructor

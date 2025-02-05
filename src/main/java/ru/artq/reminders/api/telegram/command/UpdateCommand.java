@@ -14,8 +14,6 @@ public class UpdateCommand implements Command {
     public void execute(Update update) {
         long chatId = update.getMessage().getChatId();
 
-        if (telegramBot.isUserNotLogged(chatId)) return;
-
         // todo: do update command
         telegramBot.sendMessage(chatId, "Операция обновления временно не доступна!");
     }

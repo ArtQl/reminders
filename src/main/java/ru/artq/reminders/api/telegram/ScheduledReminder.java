@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.artq.reminders.api.dto.ReminderDto;
 import ru.artq.reminders.api.service.ReminderService;
+import ru.artq.reminders.api.telegram.session.UserSessionService;
 
 import java.time.format.DateTimeFormatter;
 
