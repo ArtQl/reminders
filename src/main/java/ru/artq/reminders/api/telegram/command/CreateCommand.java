@@ -47,10 +47,10 @@ public class CreateCommand implements Command {
             telegramBot.sendMessageWithKeyboard(chatId, "Выберите приоритет напоминания:");
         } else if (session.getPriority() == null) {
             session.setPriority(text);
-            telegramBot.sendMessage(chatId, "Введите дату и время напоминания (в формате dd.MM.yyyy HH:mm):");
+            telegramBot.sendMessage(chatId, "Введите дату и время напоминания (в формате 25.02.2025 18:25):");
         } else {
-            session.setDateTime(LocalDateTime.parse(text, DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
             try {
+                session.setDateTime(LocalDateTime.parse(text, DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
                 reminderService.createReminder(
                         session.getUserId(), session.getTitle(),
                         session.getDescription(), session.getPriority(),
