@@ -1,9 +1,11 @@
 package ru.artq.reminders.api.telegram;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
@@ -20,13 +22,18 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 @Component
 @RequiredArgsConstructor
 public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
-//    @Value("${telegram.bot.token}")
-    private String botToken = "7783739105:AAEqK4xTNb1aIv7BjeGLNtnCZ7mcZUJE9LM";
+    @Value("${telegram.bot.token}")
+    private String botToken;
 
-    private TelegramClient telegramClient = new OkHttpTelegramClient(botToken);
+    private TelegramClient telegramClient;
 
     private final CommandFactory commandFactory;
     private final UserSessionService userSessionService;
+
+    @PostConstruct
+    public void init() {
+        telegramClient = new OkHttpTelegramClient(botToken);
+    }
 
     @Override
     public void consume(Update update) {
