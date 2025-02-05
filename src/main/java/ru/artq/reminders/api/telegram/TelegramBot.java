@@ -12,7 +12,10 @@ import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsume
 import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
@@ -61,8 +64,9 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
                 case START -> handleStartState(update, commandKey, chatId);
                 case LOGGED -> handleLoggedState(update, commandKey, chatId);
                 case REGISTRATION, LOGIN, CREATE_REMINDER ->
-                        executeCommand(session.getCommand(), update, chatId, "Неизвестная команда!");
+                    executeCommand(session.getCommand(), update, chatId, "Неизвестная команда!");
             }
+            deleteMessage(chatId, update.getMessage().getMessageId());
         } else if (update.hasCallbackQuery()) {
             long chatId = update.getCallbackQuery().getMessage().getChatId();
             UserSession session = userSessionService.getUserSession(chatId);
@@ -104,14 +108,37 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     }
 
     public void sendMessage(Long chatId, String text) {
-        SendMessage message = SendMessage.builder()
-                .chatId(chatId)
-                .text(text)
-                .build();
         try {
-            telegramClient.execute(message);
+            Message message = userSessionService.getUserSession(chatId).getMessage();
+            if (message != null) {
+                if (!message.getText().toLowerCase().trim().equals(text.toLowerCase().trim())) {
+                    telegramClient.execute(EditMessageText.builder()
+                            .chatId(chatId)
+                            .messageId(message.getMessageId())
+                            .text(text)
+                            .build());
+                }
+            } else {
+                Message sentMessage = telegramClient
+                        .execute(SendMessage.builder()
+                                .chatId(chatId)
+                                .text(text)
+                                .build());
+                userSessionService.getUserSession(chatId).setMessage(sentMessage);
+            }
         } catch (TelegramApiException e) {
             log.error("Failed to send message to chat {}: {}", chatId, e.getMessage());
+        }
+    }
+
+    public void deleteMessage(long chatId, Integer messageId) {
+        try {
+            telegramClient.execute(DeleteMessage.builder()
+                    .chatId(chatId)
+                    .messageId(messageId)
+                    .build());
+        } catch (TelegramApiException e) {
+            log.error("Failed to delete message {}: {}", messageId, e.getMessage());
         }
     }
 

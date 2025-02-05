@@ -38,8 +38,7 @@ public class LoginCommand implements Command {
         }
     }
 
-    private void loginHandle(UserSession session,
-                             String text, long chatId) {
+    private void loginHandle(UserSession session, String text, long chatId) {
         if (session.getEmail() == null) {
             session.setEmail(text);
             telegramBot.sendMessage(chatId, "Введите ваш пароль:");

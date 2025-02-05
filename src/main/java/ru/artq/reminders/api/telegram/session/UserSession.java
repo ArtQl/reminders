@@ -2,6 +2,7 @@ package ru.artq.reminders.api.telegram.session;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 public class UserSession {
     private UserStateType state = UserStateType.START;
     private String command = "/start";
+    private Message message;
     private Long userId;
     private String email;
     private String password;
