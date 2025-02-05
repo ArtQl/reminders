@@ -3,10 +3,7 @@ package ru.artq.reminders.api.telegram;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.artq.reminders.api.telegram.command.CreateCommand;
-import ru.artq.reminders.api.telegram.command.FindCommand;
-import ru.artq.reminders.api.telegram.command.LoginCommand;
-import ru.artq.reminders.api.telegram.command.RegistrationCommand;
+import ru.artq.reminders.api.telegram.command.*;
 
 @Component
 @RequiredArgsConstructor
@@ -16,6 +13,8 @@ public class CommandConfig {
     private final LoginCommand loginCommand;
     private final CreateCommand createCommand;
     private final FindCommand findCommand;
+    private final UpdateCommand updateCommand;
+    private final DeleteCommand deleteCommand;
 
     @PostConstruct
     public void registerCommands() {
@@ -23,5 +22,7 @@ public class CommandConfig {
         commandFactory.register("/login", loginCommand);
         commandFactory.register("/new", createCommand);
         commandFactory.register("/find", findCommand);
+        commandFactory.register("/update", updateCommand);
+        commandFactory.register("/delete", deleteCommand);
     }
 }
