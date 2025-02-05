@@ -13,11 +13,15 @@ import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.artq.reminders.api.telegram.command.CommandFactory;
 import ru.artq.reminders.api.telegram.session.UserSession;
 import ru.artq.reminders.api.telegram.session.UserSessionService;
+import ru.artq.reminders.api.telegram.session.UserStateType;
 
 @Slf4j
 @Getter
@@ -48,17 +52,23 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
 
     @Override
     public void consume(Update update) {
-        if (!update.hasMessage() && !update.getMessage().hasText()) return;
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            long chatId = update.getMessage().getChatId();
+            UserSession session = userSessionService.getUserSession(chatId);
+            String commandKey = update.getMessage().getText().trim().toLowerCase().split(" ")[0];
 
-        long chatId = update.getMessage().getChatId();
-        UserSession session = userSessionService.getUserSession(chatId);
-        String commandKey = update.getMessage().getText().trim().toLowerCase().split(" ")[0];
-
-        switch (session.getState()) {
-            case START -> handleStartState(update, commandKey, chatId);
-            case LOGGED -> handleLoggedState(update, commandKey, chatId);
-            case REGISTRATION, LOGIN, CREATE_REMINDER ->
-                    executeCommand(session.getCommand(), update, chatId, "Неизвестная команда!");
+            switch (session.getState()) {
+                case START -> handleStartState(update, commandKey, chatId);
+                case LOGGED -> handleLoggedState(update, commandKey, chatId);
+                case REGISTRATION, LOGIN, CREATE_REMINDER ->
+                        executeCommand(session.getCommand(), update, chatId, "Неизвестная команда!");
+            }
+        } else if (update.hasCallbackQuery()) {
+            long chatId = update.getCallbackQuery().getMessage().getChatId();
+            UserSession session = userSessionService.getUserSession(chatId);
+            if (session.getState().equals(UserStateType.CREATE_REMINDER)) {
+                executeCommand(session.getCommand(), update, chatId, "Неизвестная команда!");
+            }
         }
     }
 
@@ -102,7 +112,38 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
             telegramClient.execute(message);
         } catch (TelegramApiException e) {
             log.error("Failed to send message to chat {}: {}", chatId, e.getMessage());
+        }
+    }
 
+    public void sendMessageWithKeyboard(Long chatId, String text) {
+        SendMessage message = SendMessage
+                .builder()
+                .chatId(chatId)
+                .text(text)
+                .replyMarkup(InlineKeyboardMarkup.builder()
+                        .keyboardRow(new InlineKeyboardRow(
+                                        InlineKeyboardButton
+                                                .builder()
+                                                .text("Low")
+                                                .callbackData("low")
+                                                .build(),
+                                        InlineKeyboardButton
+                                                .builder()
+                                                .text("Medium")
+                                                .callbackData("medium")
+                                                .build(),
+                                        InlineKeyboardButton
+                                                .builder()
+                                                .text("High")
+                                                .callbackData("high")
+                                                .build()
+                                )
+                        ).build())
+                .build();
+        try {
+            telegramClient.execute(message);
+        } catch (TelegramApiException e) {
+            log.error("Failed to send message keyboard to chat {}: {}", chatId, e.getMessage());
         }
     }
 }

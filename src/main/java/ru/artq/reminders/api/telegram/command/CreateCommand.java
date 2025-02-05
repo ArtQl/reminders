@@ -21,9 +21,13 @@ public class CreateCommand implements Command {
 
     @Override
     public void execute(Update update) {
-        long chatId = update.getMessage().getChatId();
+        long chatId = update.hasCallbackQuery()
+                ? update.getCallbackQuery().getMessage().getChatId()
+                : update.getMessage().getChatId();
+        String text = update.hasCallbackQuery()
+                ? update.getCallbackQuery().getData()
+                : update.getMessage().getText().trim();
         UserSession session = userSessionService.getUserSession(chatId);
-        String text = update.getMessage().getText().trim();
 
         if (session.getState() == UserStateType.LOGGED) {
             telegramBot.sendMessage(chatId, "Введите заголовок напоминания:");
@@ -40,7 +44,7 @@ public class CreateCommand implements Command {
             telegramBot.sendMessage(chatId, "Введите описание напоминания:");
         } else if (session.getDescription() == null) {
             session.setDescription(text);
-            telegramBot.sendMessage(chatId, "Введите приоритет напоминания:");
+            telegramBot.sendMessageWithKeyboard(chatId, "Выберите приоритет напоминания:");
         } else if (session.getPriority() == null) {
             session.setPriority(text);
             telegramBot.sendMessage(chatId, "Введите дату и время напоминания (в формате dd.MM.yyyy HH:mm):");
@@ -55,8 +59,9 @@ public class CreateCommand implements Command {
                 session.setState(UserStateType.LOGGED);
                 session.clear();
             } catch (Exception e) {
-                telegramBot.sendMessage(chatId, "Ошибка! Неверный формат данных. Попробуйте снова.");
+                telegramBot.sendMessage(chatId, "Ошибка создания напоминания: %s".formatted(e));
                 session.setState(UserStateType.LOGGED);
+                session.clear();
             }
         }
     }
