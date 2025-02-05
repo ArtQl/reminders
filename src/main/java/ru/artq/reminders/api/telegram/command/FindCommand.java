@@ -13,7 +13,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class FindReminderCommand implements Command {
+public class FindCommand implements Command {
     private final ReminderService reminderService;
     private final TelegramBot telegramBot;
     private final UserSessionService userSessionService;
@@ -35,11 +35,12 @@ public class FindReminderCommand implements Command {
                 reminders.forEach(reminder -> {
 
                     String message = String.format(
-                            "⏰ Напоминание: %s\n📝 Описание: %s\n⏳ Время: %s\n\uD83D\uDD25 Приоритет: %s",
+                            "⏰ Напоминание: %s\n📝 Описание: %s\n⏳ Время: %s\n\uD83D\uDD25 Приоритет: %s \n\uD83C\uDFC1 Выполнено: %s",
                             reminder.getTitle(),
                             reminder.getDescription(),
                             reminder.getRemind().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
-                            reminder.getPriority()
+                            reminder.getPriority(),
+                            reminder.isCompleted() ? "✅" : "❌"
                     );
                     sb.append(message).append("\n\n");
                 });
