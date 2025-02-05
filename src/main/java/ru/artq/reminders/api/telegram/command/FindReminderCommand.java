@@ -21,7 +21,7 @@ public class FindReminderCommand implements Command {
     public void execute(Update update) {
         long chatId = update.getMessage().getChatId();
 
-        if (telegramBot.checkUserNotLogin(chatId)) return;
+        if (telegramBot.isUserNotLogged(chatId)) return;
 
         StringBuilder sb = new StringBuilder("Список ваших напоминаний:\n");
         try {

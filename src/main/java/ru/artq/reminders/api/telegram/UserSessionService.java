@@ -15,7 +15,6 @@ public class UserSessionService {
         return userSessions.computeIfAbsent(chatId, k -> new UserSession());
     }
 
-
     public void clearSession(Long chatId) {
         userSessions.remove(chatId);
     }

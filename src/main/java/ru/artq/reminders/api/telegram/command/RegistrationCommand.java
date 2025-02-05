@@ -23,7 +23,7 @@ public class RegistrationCommand implements Command {
         String text = update.getMessage().getText().trim();
         UserSession session = userSessionService.getUserSession(chatId);
 
-        if (telegramBot.checkUserLogin(chatId)) return;
+        if (telegramBot.isUserLogged(chatId)) return;
 
         if (session.getState() == UserStateType.START) {
             telegramBot.sendMessage(chatId, "Введите ваш email:");

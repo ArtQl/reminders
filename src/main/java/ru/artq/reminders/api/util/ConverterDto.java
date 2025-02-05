@@ -15,6 +15,7 @@ public class ConverterDto {
                 .createdAt(entity.getCreatedAt())
                 .remind(entity.getRemind())
                 .userId(entity.getUser().getId())
+                .completed(entity.isCompleted())
                 .build();
     }
 

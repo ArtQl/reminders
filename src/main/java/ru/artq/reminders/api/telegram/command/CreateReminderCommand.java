@@ -22,7 +22,7 @@ public class CreateReminderCommand implements Command {
     public void execute(Update update) {
         long chatId = update.getMessage().getChatId();
 
-        if (telegramBot.checkUserNotLogin(chatId)) return;
+        if (telegramBot.isUserNotLogged(chatId)) return;
 
         UserSession session = userSessionService.getUserSession(chatId);
         String text = update.getMessage().getText().trim();

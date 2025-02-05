@@ -36,6 +36,9 @@ public class ReminderEntity {
     @Builder.Default
     private Instant createdAt = Instant.now();
 
+    @Builder.Default
+    private boolean completed = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;

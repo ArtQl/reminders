@@ -37,25 +37,25 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
 
     @Override
     public void consume(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            long chatId = update.getMessage().getChatId();
-            UserSession session = userSessionService.getUserSession(chatId);
-            String command = update.getMessage().getText().split(" ")[0];
+        if (!update.hasMessage() && !update.getMessage().hasText()) return;
 
-            if (session.getState() == UserStateType.START ||
-                    session.getState() == UserStateType.LOGGED) {
-                commandFactory.getCommand(command)
-                        .ifPresentOrElse(
-                                cmd -> cmd.execute(update),
-                                () -> sendMessage(chatId,
-                                        session.getState() == UserStateType.LOGGED
-                                                ? MessagesTelegram.LOGIN_MESSAGE
-                                                : MessagesTelegram.START_MESSAGE)
-                        );
-            } else {
-                commandFactory.getCommand(userSessionService.getUserSession(chatId).getCommand())
-                        .ifPresent(cmd -> cmd.execute(update));
-            }
+        long chatId = update.getMessage().getChatId();
+        UserSession session = userSessionService.getUserSession(chatId);
+        String command = update.getMessage().getText().trim().split(" ")[0];
+
+        if (session.getState() == UserStateType.START ||
+                session.getState() == UserStateType.LOGGED) {
+            commandFactory.getCommand(command)
+                    .ifPresentOrElse(
+                            cmd -> cmd.execute(update),
+                            () -> sendMessage(chatId,
+                                    session.getState() == UserStateType.LOGGED
+                                            ? MessagesTelegram.LOGIN_MESSAGE
+                                            : MessagesTelegram.START_MESSAGE)
+                    );
+        } else {
+            commandFactory.getCommand(userSessionService.getUserSession(chatId).getCommand())
+                    .ifPresent(cmd -> cmd.execute(update));
         }
     }
 
@@ -81,14 +81,14 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
         }
     }
 
-    public Boolean checkUserLogin(long chatId) {
+    public Boolean isUserLogged(long chatId) {
         if (userSessionService.getUserSession(chatId).getState() == UserStateType.LOGGED) {
             sendMessage(chatId, MessagesTelegram.LOGIN_MESSAGE);
             return true;
         }
         return false;
     }
-    public Boolean checkUserNotLogin(long chatId) {
+    public Boolean isUserNotLogged(long chatId) {
         if (userSessionService.getUserSession(chatId).getState() != UserStateType.LOGGED) {
             sendMessage(chatId, MessagesTelegram.NO_LOGIN_MESSAGE);
             return true;

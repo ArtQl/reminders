@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 public class ReminderDto {
     private Long id;
 
-    private Long telegramChatId;
-
     @NonNull
     private String title;
 
@@ -26,4 +24,6 @@ public class ReminderDto {
     private Instant createdAt;
 
     private Long userId;
+
+    private boolean completed;
 }

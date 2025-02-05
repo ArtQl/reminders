@@ -23,7 +23,7 @@ public class LoginCommand implements Command {
         String text = update.getMessage().getText().trim();
         UserSession session = userSessionService.getUserSession(chatId);
 
-        if (telegramBot.checkUserLogin(chatId)) return;
+        if (telegramBot.isUserLogged(chatId)) return;
 
         if (!userService.existsByUsername(update.getMessage().getFrom().getUserName())) {
             telegramBot.sendMessage(chatId, "Вы не зарегистрированы в системе!");

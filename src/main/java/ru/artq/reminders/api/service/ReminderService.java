@@ -1,5 +1,6 @@
 package ru.artq.reminders.api.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,12 +57,6 @@ public class ReminderService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
-    public List<ReminderDto> findByRemindTimeBefore(LocalDateTime dateTime) {
-        return reminderRepository.findByRemindBefore(dateTime)
-                .stream().map(ConverterDto::reminderEntityToDto).toList();
-    }
-
     @Transactional
     public ReminderDto createReminder(Long userId, String title,
                                       String description, String priority,
@@ -110,5 +105,20 @@ public class ReminderService {
             throw new NotFoundException("User reminder %d not found".formatted(userId));
         }
         return reminders.stream().map(ConverterDto::reminderEntityToDto).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReminderDto> findActiveReminders(Long userId) {
+        return reminderRepository.findByRemindBeforeAndUser_IdAndCompletedIsFalse(LocalDateTime.now(), userId)
+                .stream().map(ConverterDto::reminderEntityToDto).toList();
+
+    }
+
+    @Transactional
+    public void markAsCompleted(Long reminderId) {
+        int updatedRows = reminderRepository.markAsCompleted(reminderId);
+        if (updatedRows == 0) {
+            throw new EntityNotFoundException("Reminder with ID " + reminderId + " not found");
+        }
     }
 }
