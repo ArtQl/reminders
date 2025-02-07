@@ -63,7 +63,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
             switch (session.getState()) {
                 case START -> handleStartState(update, commandKey, chatId);
                 case LOGGED -> handleLoggedState(update, commandKey, chatId);
-                case REGISTRATION, LOGIN, CREATE_REMINDER ->
+                case REGISTRATION, LOGIN, CREATE_REMINDER, DELETE ->
                     executeCommand(session.getCommand(), update, chatId, "Неизвестная команда!");
             }
             new Thread(() -> {
