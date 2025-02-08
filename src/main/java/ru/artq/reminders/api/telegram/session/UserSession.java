@@ -30,5 +30,6 @@ public class UserSession {
         description = null;
         priority = null;
         dateTime = null;
+        reminders = null;
     }
 }

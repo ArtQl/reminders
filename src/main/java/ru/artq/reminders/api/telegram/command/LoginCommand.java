@@ -1,11 +1,11 @@
 package ru.artq.reminders.api.telegram.command;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.artq.reminders.api.dto.UserDto;
 import ru.artq.reminders.api.service.UserService;
-import ru.artq.reminders.api.telegram.MessagesTelegram;
 import ru.artq.reminders.api.telegram.TelegramBot;
 import ru.artq.reminders.api.telegram.session.UserSession;
 import ru.artq.reminders.api.telegram.session.UserSessionService;
@@ -17,6 +17,7 @@ public class LoginCommand implements Command {
     private final TelegramBot telegramBot;
     private final UserService userService;
     private final UserSessionService userSessionService;
+    private final Environment env;
 
     @Override
     public void execute(Update update) {
@@ -48,7 +49,7 @@ public class LoginCommand implements Command {
                 UserDto user = userService.findUserByEmailAndPassword(
                         session.getEmail(), session.getPassword());
                 session.setUserId(user.getId());
-                telegramBot.sendMessage(chatId, MessagesTelegram.LOGIN_MESSAGE);
+                telegramBot.sendMessage(chatId, env.getProperty("telegram.bot.login-message"));
                 session.setState(UserStateType.LOGGED);
             } catch (RuntimeException e) {
                 telegramBot.sendMessage(chatId, e.getMessage());

@@ -2,11 +2,11 @@ package ru.artq.reminders.api.telegram.command;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.artq.reminders.api.exception.NotFoundException;
 import ru.artq.reminders.api.service.ReminderService;
-import ru.artq.reminders.api.telegram.MessagesTelegram;
 import ru.artq.reminders.api.telegram.TelegramBot;
 import ru.artq.reminders.api.telegram.session.UserSession;
 import ru.artq.reminders.api.telegram.session.UserSessionService;
@@ -21,6 +21,7 @@ public class DeleteCommand implements Command {
     private final TelegramBot telegramBot;
     private final ReminderService reminderService;
     private final UserSessionService userSessionService;
+    private final Environment env;
 
     @Override
     public void execute(Update update) {
@@ -43,7 +44,7 @@ public class DeleteCommand implements Command {
             telegramBot.sendMessage(chatId, "Напоминание удалено!");
             session.setState(UserStateType.LOGGED);
             Thread.sleep(2000);
-            telegramBot.sendMessage(chatId, MessagesTelegram.LOGIN_MESSAGE);
+            telegramBot.sendMessage(chatId, env.getProperty("telegram.bot.login-message"));
         } catch (NumberFormatException e) {
             String message = getMessage("Неправильный номер напоминания, попробуй снова:\n", session);
             telegramBot.sendMessage(chatId, message);

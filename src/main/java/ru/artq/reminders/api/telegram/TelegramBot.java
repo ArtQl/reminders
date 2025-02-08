@@ -1,13 +1,11 @@
 package ru.artq.reminders.api.telegram;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
 import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
@@ -26,6 +24,7 @@ import ru.artq.reminders.api.telegram.session.UserSession;
 import ru.artq.reminders.api.telegram.session.UserSessionService;
 import ru.artq.reminders.api.telegram.session.UserStateType;
 
+
 @Slf4j
 @Getter
 @Setter
@@ -34,18 +33,13 @@ import ru.artq.reminders.api.telegram.session.UserStateType;
 public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
     private final CommandFactory commandFactory;
     private final UserSessionService userSessionService;
-    @Value("${telegram.bot.token}")
-    private String botToken;
-    private TelegramClient telegramClient;
-
-    @PostConstruct
-    public void init() {
-        telegramClient = new OkHttpTelegramClient(botToken);
-    }
+    private final Environment env;
+    private final TelegramClient telegramClient;
+//    private final OkHttpClient okHttpClient;
 
     @Override
     public String getBotToken() {
-        return botToken;
+        return env.getProperty("telegram.bot.token");
     }
 
     @Override
@@ -85,17 +79,17 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
 
     private void handleStartState(Update update, String commandKey, long chatId) {
         if (commandKey.equals("/registration") || commandKey.equals("/login")) {
-            executeCommand(commandKey, update, chatId, MessagesTelegram.START_MESSAGE);
+            executeCommand(commandKey, update, chatId, env.getProperty("telegram.bot.start-message"));
         } else {
-            sendMessage(chatId, MessagesTelegram.START_MESSAGE);
+            sendMessage(chatId, env.getProperty("telegram.bot.start-message"));
         }
     }
 
     private void handleLoggedState(Update update, String commandKey, long chatId) {
         if (!commandKey.equals("/registration") && !commandKey.equals("/login")) {
-            executeCommand(commandKey, update, chatId, MessagesTelegram.LOGIN_MESSAGE);
+            executeCommand(commandKey, update, chatId, env.getProperty("telegram.bot.login-message"));
         } else {
-            sendMessage(chatId, MessagesTelegram.LOGIN_MESSAGE);
+            sendMessage(chatId, env.getProperty("telegram.bot.login-message"));
         }
     }
 
@@ -155,25 +149,6 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
 //                .chatId(chatId)
 //                .text(text)
 //                .replyMarkup(InlineKeyboardMarkup.builder()
-//                        .keyboardRow(new InlineKeyboardRow(
-//                                        InlineKeyboardButton
-//                                                .builder()
-//                                                .text("Low")
-//                                                .callbackData("low")
-//                                                .build(),
-//                                        InlineKeyboardButton
-//                                                .builder()
-//                                                .text("Medium")
-//                                                .callbackData("medium")
-//                                                .build(),
-//                                        InlineKeyboardButton
-//                                                .builder()
-//                                                .text("High")
-//                                                .callbackData("high")
-//                                                .build()
-//                                )
-//                        ).build())
-//                .build();
         try {
             telegramClient.execute(EditMessageText.builder()
                     .chatId(chatId)
