@@ -1,6 +1,7 @@
 package ru.artq.reminders.api.telegram.command;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.artq.reminders.api.dto.ReminderDto;
@@ -17,6 +18,8 @@ public class FindCommand implements Command {
     private final ReminderService reminderService;
     private final TelegramBot telegramBot;
     private final UserSessionService userSessionService;
+    @Value("${telegram.message.reminder}")
+    private String reminderMessage;
 
     @Override
     public void execute(Update update) {
@@ -30,8 +33,7 @@ public class FindCommand implements Command {
                 sb.append("Напоминаний не найдено.");
             } else {
                 reminders.forEach(reminder -> {
-                    String message = String.format(
-                            "⏰ Напоминание: %s\n📝 Описание: %s\n⏳ Время: %s\n\uD83D\uDD25 Приоритет: %s \n\uD83C\uDFC1 Выполнено: %s",
+                    String message = reminderMessage.formatted(
                             reminder.getTitle(),
                             reminder.getDescription(),
                             reminder.getRemind().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),

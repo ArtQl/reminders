@@ -1,6 +1,7 @@
 package ru.artq.reminders.api.telegram.command;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.artq.reminders.api.service.ReminderService;
@@ -18,6 +19,7 @@ public class CreateCommand implements Command {
     private final ReminderService reminderService;
     private final TelegramBot telegramBot;
     private final UserSessionService userSessionService;
+    private final Environment env;
 
     @Override
     public void execute(Update update) {
@@ -32,7 +34,7 @@ public class CreateCommand implements Command {
         if (session.getState() == UserStateType.LOGGED) {
             telegramBot.sendMessage(chatId, "Введите заголовок напоминания:");
             session.setState(UserStateType.CREATE_REMINDER);
-            session.setCommand("/new");
+            session.setCommand(env.getProperty("telegram.command.create"));
         } else if (session.getState() == UserStateType.CREATE_REMINDER) {
             handleCreateReminder(session, text, chatId);
         }

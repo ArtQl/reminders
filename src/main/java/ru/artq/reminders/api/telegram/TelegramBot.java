@@ -39,7 +39,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
 
     @Override
     public String getBotToken() {
-        return env.getProperty("telegram.bot.token");
+        return env.getProperty("telegram.token");
     }
 
     @Override
@@ -62,7 +62,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
             }
             new Thread(() -> {
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(1000);
                     deleteMessage(chatId, update.getMessage().getMessageId());
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -78,18 +78,20 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     }
 
     private void handleStartState(Update update, String commandKey, long chatId) {
-        if (commandKey.equals("/registration") || commandKey.equals("/login")) {
-            executeCommand(commandKey, update, chatId, env.getProperty("telegram.bot.start-message"));
+        if (commandKey.equals(env.getProperty("telegram.command.registration"))
+                || commandKey.equals(env.getProperty("telegram.command.login"))) {
+            executeCommand(commandKey, update, chatId, env.getProperty("telegram.message.start"));
         } else {
-            sendMessage(chatId, env.getProperty("telegram.bot.start-message"));
+            sendMessage(chatId, env.getProperty("telegram.message.start"));
         }
     }
 
     private void handleLoggedState(Update update, String commandKey, long chatId) {
-        if (!commandKey.equals("/registration") && !commandKey.equals("/login")) {
-            executeCommand(commandKey, update, chatId, env.getProperty("telegram.bot.login-message"));
+        if (!commandKey.equals(env.getProperty("telegram.command.registration"))
+                && !commandKey.equals(env.getProperty("telegram.command.login"))) {
+            executeCommand(commandKey, update, chatId, env.getProperty("telegram.message.login"));
         } else {
-            sendMessage(chatId, env.getProperty("telegram.bot.login-message"));
+            sendMessage(chatId, env.getProperty("telegram.message.login"));
         }
     }
 

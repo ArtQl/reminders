@@ -44,7 +44,7 @@ public class DeleteCommand implements Command {
             telegramBot.sendMessage(chatId, "Напоминание удалено!");
             session.setState(UserStateType.LOGGED);
             Thread.sleep(2000);
-            telegramBot.sendMessage(chatId, env.getProperty("telegram.bot.login-message"));
+            telegramBot.sendMessage(chatId, env.getProperty("telegram.message.login"));
         } catch (NumberFormatException e) {
             String message = getMessage("Неправильный номер напоминания, попробуй снова:\n", session);
             telegramBot.sendMessage(chatId, message);
@@ -58,7 +58,7 @@ public class DeleteCommand implements Command {
         String message = getMessage("Выбери номер напоминания для удаления:\n", session);
         telegramBot.sendMessage(chatId, message);
         session.setState(UserStateType.DELETE);
-        session.setCommand("/delete");
+        session.setCommand(env.getProperty("telegram.command.delete"));
     }
 
     private static String getMessage(String str, UserSession session) {

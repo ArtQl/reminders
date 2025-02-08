@@ -33,7 +33,7 @@ public class LoginCommand implements Command {
         if (session.getState() == UserStateType.START) {
             telegramBot.sendMessage(chatId, "Введите ваш email:");
             session.setState(UserStateType.LOGIN);
-            session.setCommand("/login");
+            session.setCommand(env.getProperty("telegram.command.login"));
         } else if (session.getState() == UserStateType.LOGIN) {
             loginHandle(session, text, chatId);
         }
@@ -49,7 +49,7 @@ public class LoginCommand implements Command {
                 UserDto user = userService.findUserByEmailAndPassword(
                         session.getEmail(), session.getPassword());
                 session.setUserId(user.getId());
-                telegramBot.sendMessage(chatId, env.getProperty("telegram.bot.login-message"));
+                telegramBot.sendMessage(chatId, env.getProperty("telegram.message.login"));
                 session.setState(UserStateType.LOGGED);
             } catch (RuntimeException e) {
                 telegramBot.sendMessage(chatId, e.getMessage());

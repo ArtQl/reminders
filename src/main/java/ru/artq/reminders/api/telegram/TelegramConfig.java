@@ -10,7 +10,7 @@ import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 public class TelegramConfig {
 
     @Bean
-    public OkHttpTelegramClient confingOkHttpTelegramClient(@Value("${telegram.bot.token}") String botToken) {
+    public OkHttpTelegramClient confingOkHttpTelegramClient(@Value("${telegram.token}") String botToken) {
         return new OkHttpTelegramClient(botToken);
     }
 
@@ -18,5 +18,4 @@ public class TelegramConfig {
     public OkHttpClient configOkHttpClient() {
         return new OkHttpClient().newBuilder().build();
     }
-
 }

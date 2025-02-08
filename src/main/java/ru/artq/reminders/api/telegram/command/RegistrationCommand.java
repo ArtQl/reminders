@@ -26,14 +26,14 @@ public class RegistrationCommand implements Command {
         UserSession session = userSessionService.getUserSession(chatId);
 
         if (userService.existsByUsername(update.getMessage().getFrom().getUserName())) {
-            telegramBot.sendMessage(chatId, "Ты зарегистрирован в системе! \nИспользуй следующую команду:\n/login");
+            telegramBot.sendMessage(chatId, env.getProperty("telegram.message.logged"));
             return;
         }
 
         if (session.getState() == UserStateType.START) {
             telegramBot.sendMessage(chatId, "Введите ваш email:");
             session.setState(UserStateType.REGISTRATION);
-            session.setCommand("/registration");
+            session.setCommand(env.getProperty("telegram.command.registration"));
         } else if (session.getState() == UserStateType.REGISTRATION) {
             handleRegistration(session, text, chatId, update.getMessage().getFrom().getUserName());
         }
@@ -47,7 +47,8 @@ public class RegistrationCommand implements Command {
         } else if (session.getPassword() == null) {
             session.setPassword(text);
             try {
-                UserDto user = userService.createUser(chatId, username, session.getEmail(), session.getPassword());
+                UserDto user = userService.createUser(chatId, username,
+                        session.getEmail(), session.getPassword());
                 session.setUserId(user.getId());
                 telegramBot.sendMessage(chatId, env.getProperty("telegram.bot.login-message"));
                 session.setState(UserStateType.LOGGED);
