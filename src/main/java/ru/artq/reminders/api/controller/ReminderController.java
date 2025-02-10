@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.artq.reminders.api.controller.helper.ValidateController;
+import ru.artq.reminders.api.helper.ValidateController;
 import ru.artq.reminders.api.dto.ReminderDto;
-import ru.artq.reminders.api.exception.BadRequestException;
-import ru.artq.reminders.api.service.ReminderService;
+import ru.artq.reminders.core.exception.BadRequestException;
+import ru.artq.reminders.core.service.ReminderService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

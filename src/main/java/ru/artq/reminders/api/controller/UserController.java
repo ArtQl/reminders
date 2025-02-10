@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.artq.reminders.api.controller.helper.ValidateController;
+import ru.artq.reminders.api.helper.ValidateController;
 import ru.artq.reminders.api.dto.UserDto;
-import ru.artq.reminders.api.service.UserService;
+import ru.artq.reminders.core.service.UserService;
 
 @Slf4j
 @RestController

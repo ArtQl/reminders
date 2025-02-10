@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.artq.reminders.api.dto.ErrorDto;
-import ru.artq.reminders.api.exception.AlreadyExistsException;
-import ru.artq.reminders.api.exception.BadRequestException;
-import ru.artq.reminders.api.exception.NotFoundException;
+import ru.artq.reminders.core.exception.AlreadyExistsException;
+import ru.artq.reminders.core.exception.BadRequestException;
+import ru.artq.reminders.core.exception.NotFoundException;
 
 @ControllerAdvice
 @Slf4j
